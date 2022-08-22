@@ -40,5 +40,5 @@ public interface ISubjectService
     /// </summary>
     /// <param name="subjectId"></param>
     /// <returns></returns>
-    Task<BaseResponse<GetSubjectDto>> DeleteSubjectByIdAsync(int subjectId);
+    Task<BaseResponse<string>> DeleteSubjectByIdAsync(int subjectId);
 }

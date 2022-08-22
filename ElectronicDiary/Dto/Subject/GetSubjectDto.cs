@@ -2,5 +2,5 @@
 
 public class GetSubjectDto
 {
-    
+    public string Name { get; set; }
 }

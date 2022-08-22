@@ -1,7 +1,7 @@
 ﻿using ElectronicDiary.Dto.Subject;
 using ElectronicDiary.Entities;
+using ElectronicDiary.Extension;
 using ElectronicDiary.Interfaces.IServices;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -10,7 +10,7 @@ namespace ElectronicDiary.Controller.Subject;
 
 [ApiController]
 [Route("api/subject")]
-public class SubjectController : ControllerBase
+public class SubjectController : ControllerBaseExtension
 {
     private readonly ISubjectService _subjectService;
 
@@ -30,12 +30,7 @@ public class SubjectController : ControllerBase
     {
         var response = await _subjectService.GetSubjectByIdAsync(subjectId);
 
-        if (response.IsError)
-        {
-            return BadRequest();
-        }
-        
-        return Ok();
+        return Response(response);
     }
 
     [HttpGet]
@@ -49,12 +44,7 @@ public class SubjectController : ControllerBase
     {
         var response = await _subjectService.GetSubjectByPaginationAsync(request);
 
-        if (response.IsError)
-        {
-            return BadRequest();
-        }
-        
-        return Ok();
+        return Response(response);
     }
 
     [HttpPost]
@@ -68,12 +58,7 @@ public class SubjectController : ControllerBase
     {
         var response = await _subjectService.CreateSubjectAsync(request);
 
-        if (response.IsError)
-        {
-            return BadRequest();
-        }
-        
-        return Ok();
+        return Response(response);
     }
 
     [HttpPut]
@@ -87,12 +72,7 @@ public class SubjectController : ControllerBase
     {
         var response = await _subjectService.UpdateSubjectByIdAsync(subjectId, request);
 
-        if (response.IsError)
-        {
-            return BadRequest();
-        }
-        
-        return Ok();
+        return Response(response);
     }
 
     [HttpDelete]
@@ -106,11 +86,6 @@ public class SubjectController : ControllerBase
     {
         var response = await _subjectService.DeleteSubjectByIdAsync(subjectId);
 
-        if (response.IsError)
-        {
-            return BadRequest();
-        }
-        
-        return Ok();
+        return Response(response);
     }
 }

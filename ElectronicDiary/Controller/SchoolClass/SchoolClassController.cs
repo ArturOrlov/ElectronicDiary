@@ -1,7 +1,7 @@
 ﻿using ElectronicDiary.Dto.SchoolClass;
 using ElectronicDiary.Entities;
+using ElectronicDiary.Extension;
 using ElectronicDiary.Interfaces.IServices;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -9,7 +9,7 @@ namespace ElectronicDiary.Controller.SchoolClass;
 
 [ApiController]
 [Route("api/school-class")]
-public class SchoolClassController : ControllerBase
+public class SchoolClassController : ControllerBaseExtension
 {
     private readonly ISchoolClassService _schoolClassService;
 
@@ -29,12 +29,7 @@ public class SchoolClassController : ControllerBase
     {
         var response = await _schoolClassService.GetSchoolClassByIdAsync(schoolClassId);
 
-        if (response.IsError)
-        {
-            return BadRequest();
-        }
-        
-        return Ok();
+        return Response(response);
     }
 
     [HttpGet]
@@ -48,12 +43,7 @@ public class SchoolClassController : ControllerBase
     {
         var response = await _schoolClassService.GetSchoolClassByPaginationAsync(request);
 
-        if (response.IsError)
-        {
-            return BadRequest();
-        }
-        
-        return Ok();
+        return Response(response);
     }
 
     [HttpPost]
@@ -67,12 +57,7 @@ public class SchoolClassController : ControllerBase
     {
         var response = await _schoolClassService.CreateSchoolClassAsync(request);
 
-        if (response.IsError)
-        {
-            return BadRequest();
-        }
-        
-        return Ok();
+        return Response(response);
     }
 
     [HttpPut]
@@ -86,12 +71,7 @@ public class SchoolClassController : ControllerBase
     {
         var response = await _schoolClassService.UpdateSchoolClassByIdAsync(schoolClassId, request);
 
-        if (response.IsError)
-        {
-            return BadRequest();
-        }
-        
-        return Ok();
+        return Response(response);
     }
 
     [HttpDelete]
@@ -105,11 +85,6 @@ public class SchoolClassController : ControllerBase
     {
         var response = await _schoolClassService.DeleteSchoolClassByIdAsync(schoolClassId);
 
-        if (response.IsError)
-        {
-            return BadRequest();
-        }
-        
-        return Ok();
+        return Response(response);
     }
 }

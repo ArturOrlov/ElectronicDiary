@@ -1,8 +1,7 @@
 ﻿using ElectronicDiary.Dto.Role;
 using ElectronicDiary.Entities;
+using ElectronicDiary.Extension;
 using ElectronicDiary.Interfaces.IServices;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -10,7 +9,7 @@ namespace ElectronicDiary.Controller.Role;
 
 [ApiController]
 [Route("api/role")]
-public class RoleController : ControllerBase
+public class RoleController : ControllerBaseExtension
 {
     private readonly IRoleService _roleService;
 
@@ -30,12 +29,7 @@ public class RoleController : ControllerBase
     {
         var response = await _roleService.GetRoleByIdAsync(roleId);
 
-        if (response.IsError)
-        {
-            return BadRequest();
-        }
-        
-        return Ok();
+        return Response(response);
     }
 
     [HttpGet]
@@ -49,12 +43,7 @@ public class RoleController : ControllerBase
     {
         var response = await _roleService.GetRoleByPaginationAsync(request);
 
-        if (response.IsError)
-        {
-            return BadRequest();
-        }
-        
-        return Ok();
+        return Response(response);
     }
 
     [HttpPost]
@@ -68,12 +57,7 @@ public class RoleController : ControllerBase
     {
         var response = await _roleService.CreateRoleAsync(request);
 
-        if (response.IsError)
-        {
-            return BadRequest();
-        }
-        
-        return Ok();
+        return Response(response);
     }
 
     [HttpPut]
@@ -87,12 +71,7 @@ public class RoleController : ControllerBase
     {
         var response = await _roleService.UpdateRoleByIdAsync(roleId, request);
 
-        if (response.IsError)
-        {
-            return BadRequest();
-        }
-        
-        return Ok();
+        return Response(response);
     }
 
     [HttpDelete]
@@ -106,11 +85,6 @@ public class RoleController : ControllerBase
     {
         var response = await _roleService.DeleteRoleByIdAsync(roleId);
 
-        if (response.IsError)
-        {
-            return BadRequest();
-        }
-        
-        return Ok();
+        return Response(response);
     }
 }

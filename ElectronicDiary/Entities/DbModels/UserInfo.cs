@@ -2,6 +2,9 @@
 
 namespace ElectronicDiary.Entities.DbModels;
 
+/// <summary>
+/// Дополнительная информация о пользователе
+/// </summary>
 public class UserInfo : BaseModel
 {
     public int UserId { get; set; }

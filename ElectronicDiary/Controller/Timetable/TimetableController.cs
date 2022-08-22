@@ -1,7 +1,7 @@
 ﻿using ElectronicDiary.Dto.Timetable;
 using ElectronicDiary.Entities;
+using ElectronicDiary.Extension;
 using ElectronicDiary.Interfaces.IServices;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -9,7 +9,7 @@ namespace ElectronicDiary.Controller.Timetable;
 
 [ApiController]
 [Route("api/timetable")]
-public class TimetableController : ControllerBase
+public class TimetableController : ControllerBaseExtension
 {
     private readonly ITimetableService _timetableService;
 
@@ -29,12 +29,7 @@ public class TimetableController : ControllerBase
     {
         var response = await _timetableService.GetTimetableByIdAsync(timetableId);
 
-        if (response.IsError)
-        {
-            return BadRequest();
-        }
-        
-        return Ok();
+        return Response(response);
     }
 
     [HttpGet]
@@ -48,12 +43,7 @@ public class TimetableController : ControllerBase
     {
         var response = await _timetableService.GetTimetableByPaginationAsync(request);
 
-        if (response.IsError)
-        {
-            return BadRequest();
-        }
-        
-        return Ok();
+        return Response(response);
     }
 
     [HttpPost]
@@ -67,12 +57,7 @@ public class TimetableController : ControllerBase
     {
         var response = await _timetableService.CreateTimetableAsync(request);
 
-        if (response.IsError)
-        {
-            return BadRequest();
-        }
-        
-        return Ok();
+        return Response(response);
     }
 
     [HttpPut]
@@ -86,12 +71,7 @@ public class TimetableController : ControllerBase
     {
         var response = await _timetableService.UpdateTimetableByIdAsync(timetableId, request);
 
-        if (response.IsError)
-        {
-            return BadRequest();
-        }
-        
-        return Ok();
+        return Response(response);
     }
 
     [HttpDelete]
@@ -105,11 +85,6 @@ public class TimetableController : ControllerBase
     {
         var response = await _timetableService.DeleteTimetableByIdAsync(timetableId);
 
-        if (response.IsError)
-        {
-            return BadRequest();
-        }
-        
-        return Ok();
+        return Response(response);
     }
 }

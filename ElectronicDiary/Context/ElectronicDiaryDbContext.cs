@@ -18,8 +18,7 @@ public class ElectronicDiaryDbContext : IdentityDbContext<User, Role, int, Ident
     public DbSet<User> User { get; set; }
     public DbSet<Role> Role { get; set; }
     public DbSet<UserRole> UserRole { get; set; }
-    
-    public DbSet<SchoolClass> Class { get; set; }
+    public DbSet<SchoolClass> SchoolClass { get; set; }
     public DbSet<Homework> Homework { get; set; }
     public DbSet<Subject> Subject { get; set; }
     public DbSet<Timetable> Timetable { get; set; }
@@ -69,10 +68,17 @@ public class ElectronicDiaryDbContext : IdentityDbContext<User, Role, int, Ident
             entity.ToTable("Timetable", SchoolSchema);
             entity.Property(p => p.CreatedAt).HasDefaultValueSql("NOW()").ValueGeneratedOnAdd();
         });
+        
+        builder.Entity<PerformanceRating>(entity =>
+        {
+            entity.ToTable("PerformanceRating", SchoolSchema);
+            entity.Property(p => p.CreatedAt).HasDefaultValueSql("NOW()").ValueGeneratedOnAdd();
+        });
     }
     
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
+        // todo понять как передавать параметр из аппсетингс
         optionsBuilder.UseNpgsql("Server=localhost;Port=5432;Database=ElectronicDiary;User Id=postgres;Password=Ferdinand514");
     }
 }

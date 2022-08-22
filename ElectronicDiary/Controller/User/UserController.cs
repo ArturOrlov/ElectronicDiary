@@ -1,8 +1,7 @@
 ﻿using ElectronicDiary.Dto.User;
 using ElectronicDiary.Entities;
+using ElectronicDiary.Extension;
 using ElectronicDiary.Interfaces.IServices;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -10,9 +9,9 @@ namespace ElectronicDiary.Controller.User;
 
 [ApiController]
 [Route("api/user")]
-public class UserController : ControllerBase
+public class UserController : ControllerBaseExtension
 {
-    private IUserService _userService;
+    private readonly IUserService _userService;
 
     public UserController(IUserService userService)
     {
@@ -30,12 +29,7 @@ public class UserController : ControllerBase
     {
         var response = await _userService.GetUserByIdAsync(userId);
 
-        if (response.IsError)
-        {
-            return BadRequest();
-        }
-        
-        return Ok();
+        return Response(response);
     }
 
     [HttpGet]
@@ -49,12 +43,7 @@ public class UserController : ControllerBase
     {
         var response = await _userService.GetUserByPaginationAsync(request);
 
-        if (response.IsError)
-        {
-            return BadRequest();
-        }
-        
-        return Ok();
+        return Response(response);
     }
 
     [HttpPost]
@@ -68,12 +57,7 @@ public class UserController : ControllerBase
     {
         var response = await _userService.CreateUserAsync(request);
 
-        if (response.IsError)
-        {
-            return BadRequest();
-        }
-        
-        return Ok();
+        return Response(response);
     }
 
     [HttpPut]
@@ -87,12 +71,7 @@ public class UserController : ControllerBase
     {
         var response = await _userService.UpdateUserByIdAsync(userId, request);
 
-        if (response.IsError)
-        {
-            return BadRequest();
-        }
-        
-        return Ok();
+        return Response(response);
     }
 
     [HttpDelete]
@@ -106,11 +85,6 @@ public class UserController : ControllerBase
     {
         var response = await _userService.DeleteUserByIdAsync(userId);
 
-        if (response.IsError)
-        {
-            return BadRequest();
-        }
-        
-        return Ok();
+        return Response(response);
     }
 }

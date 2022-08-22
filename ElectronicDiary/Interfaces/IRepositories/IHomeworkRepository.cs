@@ -5,5 +5,4 @@ namespace ElectronicDiary.Interfaces.IRepositories;
 
 public interface IHomeworkRepository : IGenericRepository<Homework>
 {
-    
 }

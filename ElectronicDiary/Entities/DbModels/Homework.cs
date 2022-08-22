@@ -8,7 +8,8 @@ namespace ElectronicDiary.Entities.DbModels;
 public class Homework : BaseModel
 {
     /// <summary>
-    /// В задаче написанно "Кэшировать домашние задания на следующий день" и "следующий день" меня смещает, из этого можно решить что дз всегда должно быть на следующий день
+    /// В задаче написанно "Кэшировать домашние задания на следующий день" и "следующий день" меня смещает,
+    /// из этого можно решить что дз всегда должно быть на следующий день
     /// </summary>
     public DateTimeOffset ForDateAt { get; set; }
     
@@ -17,6 +18,6 @@ public class Homework : BaseModel
     public int SubjectId { get; set; }
     public Subject Subject { get; set; }
 
-    public int ClassId { get; set; }
+    public int SchoolClassId { get; set; }
     public SchoolClass SchoolClass { get; set; }
 }

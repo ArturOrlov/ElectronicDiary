@@ -40,5 +40,5 @@ public interface ISchoolClassService
     /// </summary>
     /// <param name="schoolClassIdId"></param>
     /// <returns></returns>
-    Task<BaseResponse<GetSchoolClassDto>> DeleteSchoolClassByIdAsync(int schoolClassIdId);
+    Task<BaseResponse<string>> DeleteSchoolClassByIdAsync(int schoolClassIdId);
 }

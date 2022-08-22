@@ -1,8 +1,7 @@
 ﻿using ElectronicDiary.Dto.Homework;
 using ElectronicDiary.Entities;
+using ElectronicDiary.Extension;
 using ElectronicDiary.Interfaces.IServices;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -10,7 +9,7 @@ namespace ElectronicDiary.Controller.Homework;
 
 [ApiController]
 [Route("api/homework")]
-public class HomeworkController : ControllerBase
+public class HomeworkController : ControllerBaseExtension
 {
     private readonly IHomeworkService _homeworkService;
 
@@ -30,12 +29,7 @@ public class HomeworkController : ControllerBase
     {
         var response = await _homeworkService.GetHomeworkByIdAsync(homeworkId);
 
-        if (response.IsError)
-        {
-            return BadRequest();
-        }
-        
-        return Ok();
+        return Response(response);
     }
 
     [HttpGet]
@@ -49,12 +43,7 @@ public class HomeworkController : ControllerBase
     {
         var response = await _homeworkService.GetHomeworkByPaginationAsync(request);
 
-        if (response.IsError)
-        {
-            return BadRequest();
-        }
-        
-        return Ok();
+        return Response(response);
     }
 
     [HttpPost]
@@ -68,12 +57,7 @@ public class HomeworkController : ControllerBase
     {
         var response = await _homeworkService.CreateHomeworkAsync(request);
 
-        if (response.IsError)
-        {
-            return BadRequest();
-        }
-        
-        return Ok();
+        return Response(response);
     }
 
     [HttpPut]
@@ -87,12 +71,7 @@ public class HomeworkController : ControllerBase
     {
         var response = await _homeworkService.UpdateHomeworkByIdAsync(homeworkId, request);
 
-        if (response.IsError)
-        {
-            return BadRequest();
-        }
-        
-        return Ok();
+        return Response(response);
     }
 
     [HttpDelete]
@@ -106,11 +85,6 @@ public class HomeworkController : ControllerBase
     {
         var response = await _homeworkService.DeleteHomeworkByIdAsync(homeworkId);
 
-        if (response.IsError)
-        {
-            return BadRequest();
-        }
-        
-        return Ok();
+        return Response(response);
     }
 }

@@ -1,9 +1,8 @@
 using System.Text;
+using ElectronicDiary.AutoMapper;
 using ElectronicDiary.Context;
 using ElectronicDiary.Entities.DbModels;
-using ElectronicDiary.Interfaces.IRepositories;
 using ElectronicDiary.Interfaces.IServices;
-using ElectronicDiary.Repositories;
 using ElectronicDiary.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -89,8 +88,15 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 builder.Services.AddAuthorization(); // подсмотерл с автобонусов
 builder.Services.AddAuthentication(); // подсмотерл с автобонусов
 
+builder.Services.AddAutoMapper(typeof(AutoMappingProfile));
+
 builder.Services.AddScoped<ITimetableService, TimetableService>();
-builder.Services.AddScoped<ITimetableRepository, TimetableRepository>();
+builder.Services.AddScoped<ISubjectService, SubjectService>();
+builder.Services.AddScoped<ISchoolClassService, SchoolClassService>();
+builder.Services.AddScoped<IHomeworkService, HomeworkService>();
+builder.Services.AddScoped<IRoleService, RoleService>();
+builder.Services.AddScoped<IUserService, UserService>();
+// builder.Services.AddScoped<ITimetableRepository, TimetableRepository>();
 
 var app = builder.Build();
 

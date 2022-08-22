@@ -40,5 +40,5 @@ public interface IHomeworkService
     /// </summary>
     /// <param name="homeworkId"></param>
     /// <returns></returns>
-    Task<BaseResponse<GetHomeworkDto>> DeleteHomeworkByIdAsync(int homeworkId);
+    Task<BaseResponse<string>> DeleteHomeworkByIdAsync(int homeworkId);
 }

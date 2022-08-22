@@ -40,5 +40,5 @@ public interface ITimetableService
     /// </summary>
     /// <param name="timetableId"></param>
     /// <returns></returns>
-    Task<BaseResponse<GetTimetableDto>> DeleteTimetableByIdAsync(int timetableId);
+    Task<BaseResponse<string>> DeleteTimetableByIdAsync(int timetableId);
 }

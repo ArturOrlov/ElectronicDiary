@@ -40,5 +40,5 @@ public interface IRoleService
     /// </summary>
     /// <param name="roleId"></param>
     /// <returns></returns>
-    Task<BaseResponse<GetRoleDto>> DeleteRoleByIdAsync(int roleId);
+    Task<BaseResponse<string>> DeleteRoleByIdAsync(int roleId);
 }

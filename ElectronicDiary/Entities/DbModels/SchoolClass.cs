@@ -7,5 +7,6 @@ namespace ElectronicDiary.Entities.DbModels;
 /// </summary>
 public class SchoolClass : BaseModel
 {
-    public string T { get; set; }
+    public DateTimeOffset ClassCreateTime { get; set; }
+    public string Symbol { get; set; }
 }

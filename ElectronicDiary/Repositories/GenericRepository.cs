@@ -1,4 +1,6 @@
 ﻿using ElectronicDiary.Context;
+using ElectronicDiary.Entities;
+using ElectronicDiary.Interfaces.IRepositories;
 using ElectronicDiary.Services;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,9 +22,22 @@ public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEnt
         return await _dbSet.FindAsync();
     }
 
-    public async Task<List<TEntity>> GetRangeAsync()
+    public async Task<IEnumerable<TEntity>> GetRangeAsync()
     {
         return await _dbSet.AsNoTracking().ToListAsync();
+    }
+
+    public IEnumerable<TEntity> Get(Func<TEntity, bool> predicate)
+    {
+        return _dbSet.Where(predicate);
+    }
+
+    public IEnumerable<TEntity> Get(Func<TEntity, bool> predicate, BasePagination pagination)
+    {
+        return _dbSet.Where(predicate)
+            .Skip(pagination.Skip)
+            .Take(pagination.Take)
+            .ToList();
     }
 
     public async Task CreateAsync(TEntity entity)

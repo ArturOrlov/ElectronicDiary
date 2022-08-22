@@ -1,9 +1,12 @@
-﻿using ElectronicDiary.Interfaces.IRepositories;
-using ElectronicDiary.Interfaces.IServices;
+﻿using ElectronicDiary.Context;
+using ElectronicDiary.Entities.DbModels;
+using ElectronicDiary.Interfaces.IRepositories;
 
 namespace ElectronicDiary.Repositories;
 
-public class SubjectRepository : ISubjectRepository
+public class SubjectRepository : GenericRepository<Subject>, ISubjectRepository
 {
-    
+    public SubjectRepository(ElectronicDiaryDbContext context) : base(context)
+    {
+    }
 }

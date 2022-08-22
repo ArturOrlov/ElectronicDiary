@@ -40,5 +40,5 @@ public interface IUserService
     /// </summary>
     /// <param name="userId"></param>
     /// <returns></returns>
-    Task<BaseResponse<GetUserDto>> DeleteUserByIdAsync(int userId);
+    Task<BaseResponse<string>> DeleteUserByIdAsync(int userId);
 }

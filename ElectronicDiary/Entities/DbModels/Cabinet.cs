@@ -7,5 +7,8 @@ namespace ElectronicDiary.Entities.DbModels;
 /// </summary>
 public class Cabinet : BaseModel
 {
+    /// <summary>
+    /// Номер кабинета
+    /// </summary>
     public string Number { get; set; }
 }

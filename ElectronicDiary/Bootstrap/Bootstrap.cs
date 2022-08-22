@@ -2,7 +2,6 @@
 using ElectronicDiary.Context;
 using ElectronicDiary.Entities.DbModels;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace ElectronicDiary.Bootstrap;
 
@@ -18,19 +17,20 @@ public class Bootstrap
         _userManager = userManager;
     }
 
-    public void SeedDb()
+    public async Task SeedDb()
     {
-        SeedRoles();
-        SeedAdmin();
+        await SeedRolesAsync();
+        await SeedAdminAsync();
+        await SeedSchoolClassAsync();
     }
 
-    private void SeedRoles()
+    private async Task SeedRolesAsync()
     {
         if (_context.Role.Any())
         {
             return;
         }
-        
+
         // var roles = new List<Role>()
         // {
         //     new()
@@ -74,7 +74,7 @@ public class Bootstrap
         //         UpdatedAt = DateTimeOffset.Now
         //     },
         // };
-            
+
         var roles = new List<Role>()
         {
             RoleSeedHelper(RoleConstant.Admin),
@@ -83,18 +83,18 @@ public class Bootstrap
             RoleSeedHelper(RoleConstant.Student),
             RoleSeedHelper(RoleConstant.Parent)
         };
-        
-        _context.AddRange(roles);
-        _context.SaveChanges();
+
+        await _context.AddRangeAsync(roles);
+        await _context.SaveChangesAsync();
     }
 
-    private async Task SeedAdmin()
+    private async Task SeedAdminAsync()
     {
         if (_context.Users.Any(u => u.UserName == AdminDefaultSettings.UserName))
         {
             return;
         }
-        
+
         var user = new User()
         {
             Email = AdminDefaultSettings.Email,
@@ -108,22 +108,55 @@ public class Bootstrap
         };
 
         var result = await _userManager.CreateAsync(user, AdminDefaultSettings.Password);
-                
+
         if (result.Succeeded)
         {
             await _userManager.AddToRoleAsync(user, RoleConstant.Admin);
         }
     }
 
+    private async Task SeedSchoolClassAsync()
+    {
+        if (_context.SchoolClass.Any())
+        {
+            return;
+        }
+
+        var schoolClasses = new List<SchoolClass>()
+        {
+            new() { CreatedAt = ClassDateSeedHelper(2022), Symbol = "А" }, // 1 год/класс
+            new() { CreatedAt = ClassDateSeedHelper(2021), Symbol = "Б" }, // 2 год/класс
+            new() { CreatedAt = ClassDateSeedHelper(2020), Symbol = "В" }, // 3 год/класс
+            new() { CreatedAt = ClassDateSeedHelper(2019), Symbol = "Г" }, // 4 год/класс
+            new() { CreatedAt = ClassDateSeedHelper(2018), Symbol = "Д" }, // 5 год/класс
+            new() { CreatedAt = ClassDateSeedHelper(2017), Symbol = "А" }, // 6 год/класс
+            new() { CreatedAt = ClassDateSeedHelper(2016), Symbol = "Б" }, // 7 год/класс
+            new() { CreatedAt = ClassDateSeedHelper(2015), Symbol = "В" }, // 8 год/класс
+            new() { CreatedAt = ClassDateSeedHelper(2014), Symbol = "Г" }, // 9 год/класс
+            new() { CreatedAt = ClassDateSeedHelper(2013), Symbol = "Д" }, // 10 год/класс
+            new() { CreatedAt = ClassDateSeedHelper(2012), Symbol = "А" }, // 11 год/класс
+        };
+
+        await _context.AddRangeAsync(schoolClasses);
+        await _context.SaveChangesAsync();
+    }
+
+    // ============================================================================================================== //
+
     private Role RoleSeedHelper(string role)
     {
         return new Role()
         {
-            Name = role, 
+            Name = role,
             NormalizedName = role.ToUpper(),
-            ConcurrencyStamp = Convert.ToString(DateTimeOffset.Now.Ticks), 
+            ConcurrencyStamp = Convert.ToString(DateTimeOffset.Now.Ticks),
             CreatedAt = DateTimeOffset.Now,
             UpdatedAt = DateTimeOffset.Now
         };
+    }
+
+    private DateTimeOffset ClassDateSeedHelper(int year)
+    {
+        return new DateTimeOffset(year, 0, 0, 0, 0, 0, DateTimeOffset.Now.Offset);
     }
 }

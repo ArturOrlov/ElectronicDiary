@@ -1,4 +1,6 @@
-﻿namespace ElectronicDiary.Services;
+﻿using ElectronicDiary.Entities;
+
+namespace ElectronicDiary.Interfaces.IRepositories;
 
 public interface IGenericRepository<TEntity> where TEntity : class
 {
@@ -13,7 +15,17 @@ public interface IGenericRepository<TEntity> where TEntity : class
     /// 
     /// </summary>
     /// <returns></returns>
-    Task<List<TEntity>> GetRangeAsync();
+    Task<IEnumerable<TEntity>> GetRangeAsync();
+
+    IEnumerable<TEntity> Get(Func<TEntity, bool> predicate);
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="predicate"></param>
+    /// <param name="pagination"></param>
+    /// <returns></returns>
+    IEnumerable<TEntity> Get(Func<TEntity, bool> predicate, BasePagination pagination);
     
     /// <summary>
     /// 

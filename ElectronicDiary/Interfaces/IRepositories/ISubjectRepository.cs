@@ -1,6 +1,8 @@
-﻿namespace ElectronicDiary.Interfaces.IRepositories;
+﻿using ElectronicDiary.Entities.DbModels;
+using ElectronicDiary.Services;
 
-public interface ISubjectRepository
+namespace ElectronicDiary.Interfaces.IRepositories;
+
+public interface ISubjectRepository : IGenericRepository<Subject>
 {
-    
 }
