@@ -51,7 +51,7 @@ public class RoleService : IRoleService
         }
 
         roles = roles.Skip(request.Skip).Take(request.Take).ToList();
-        
+
         var mapHomework = _mapper.Map<List<GetRoleDto>>(roles);
 
         response.Data = mapHomework;
@@ -70,7 +70,7 @@ public class RoleService : IRoleService
             response.Description = $"Роль с именем - {request.Name} уже есть";
             return response;
         }
-        
+
         var role = _mapper.Map<Role>(request);
 
         var result = await _roleManager.CreateAsync(role);
@@ -81,7 +81,7 @@ public class RoleService : IRoleService
             response.Description = result.Errors.ToString();
             return response;
         }
-        
+
         var mapRole = _mapper.Map<GetRoleDto>(result);
 
         response.Data = mapRole;
@@ -91,7 +91,7 @@ public class RoleService : IRoleService
     public async Task<BaseResponse<GetRoleDto>> UpdateRoleByIdAsync(int roleId, UpdateRoleDto request)
     {
         var response = new BaseResponse<GetRoleDto>();
-        
+
         var role = await _roleManager.FindByIdAsync(roleId.ToString());
 
         if (role == null)
@@ -123,7 +123,7 @@ public class RoleService : IRoleService
             response.Description = result.Errors.ToString();
             return response;
         }
-        
+
         var mapRole = _mapper.Map<GetRoleDto>(result);
 
         response.Data = mapRole;

@@ -2,6 +2,7 @@
 
 public class GetSchoolClassDto
 {
-    public DateTimeOffset ClassCreateTime { get; set; }
+    public int Id { get; set; }
+    public DateTime ClassCreateTime { get; set; }
     public string Symbol { get; set; }
 }

@@ -11,7 +11,7 @@ public class Homework : BaseModel
     /// В задаче написанно "Кэшировать домашние задания на следующий день" и "следующий день" меня смещает,
     /// из этого можно решить что дз всегда должно быть на следующий день
     /// </summary>
-    public DateTimeOffset ForDateAt { get; set; }
+    public DateTime ForDateAt { get; set; }
     
     public string HomeworkDescription { get; set; }
     

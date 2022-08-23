@@ -67,6 +67,15 @@ public class SubjectService : ISubjectService
             return response;
         }
 
+        var subjects = _subjectRepository.Get(s => s.Name == request.Name).FirstOrDefault();
+
+        if (subjects != null)
+        {
+            response.IsError = true;
+            response.Description = "Предмет с таким названием уже есть";
+            return response;
+        }
+
         var subject = _mapper.Map<Subject>(request);
         
         await _subjectRepository.CreateAsync(subject);
@@ -92,9 +101,16 @@ public class SubjectService : ISubjectService
 
         if (string.IsNullOrEmpty(request.Name))
         {
-            response.IsError = true;
-            response.Description = "Название предмета отсутствует";
-            return response;
+            var subjects = _subjectRepository.Get(s => s.Name == request.Name).FirstOrDefault();
+
+            if (subjects != null)
+            {
+                response.IsError = true;
+                response.Description = "Предмет с таким названием уже есть";
+                return response;
+            }
+
+            subject.Name = request.Name;
         }
 
         await _subjectRepository.UpdateAsync(subject);

@@ -2,5 +2,11 @@
 
 public class CreatePerformanceRatingDto
 {
-    public string Name { get; set; }
+    /// <summary>
+    /// Оценка
+    /// </summary>
+    public uint Valuation { get; set; }
+    public int TeacherId { get; set; }
+    public int StudentId { get; set; }
+    public int SubjectId { get; set; }
 }

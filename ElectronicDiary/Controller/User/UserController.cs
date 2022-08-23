@@ -27,7 +27,7 @@ public class UserController : ControllerBaseExtension
         Tags = new[] { "User" })]
     public async Task<IActionResult> GetById([FromRoute] int userId)
     {
-        var response = await _userService.GetUserByIdAsync(userId);
+        var response = await _userService.GetByIdAsync(userId);
 
         return Response(response);
     }
@@ -41,7 +41,7 @@ public class UserController : ControllerBaseExtension
         Tags = new[] { "User" })]
     public async Task<IActionResult> GetAll([FromQuery] BasePagination request)
     {
-        var response = await _userService.GetUserByPaginationAsync(request);
+        var response = await _userService.GetByPaginationAsync(request);
 
         return Response(response);
     }
@@ -55,7 +55,7 @@ public class UserController : ControllerBaseExtension
         Tags = new[] { "User" })]
     public async Task<IActionResult> Create([FromBody] CreateUserDto request)
     {
-        var response = await _userService.CreateUserAsync(request);
+        var response = await _userService.CreateAsync(request);
 
         return Response(response);
     }
@@ -69,7 +69,7 @@ public class UserController : ControllerBaseExtension
         Tags = new[] { "User" })]
     public async Task<IActionResult> Update([FromRoute] int userId, [FromBody] UpdateUserDto request)
     {
-        var response = await _userService.UpdateUserByIdAsync(userId, request);
+        var response = await _userService.UpdateByIdAsync(userId, request);
 
         return Response(response);
     }
@@ -83,7 +83,7 @@ public class UserController : ControllerBaseExtension
         Tags = new[] { "User" })]
     public async Task<IActionResult> Delete([FromRoute] int userId)
     {
-        var response = await _userService.DeleteUserByIdAsync(userId);
+        var response = await _userService.DeleteByIdAsync(userId);
 
         return Response(response);
     }

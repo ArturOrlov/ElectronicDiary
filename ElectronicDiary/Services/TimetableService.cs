@@ -17,7 +17,7 @@ public class TimetableService : ITimetableService
 
     public TimetableService(ITimetableRepository timetableRepository,
         ISubjectRepository subjectRepository,
-        ISchoolClassRepository schoolClassRepository, 
+        ISchoolClassRepository schoolClassRepository,
         IMapper mapper)
     {
         _timetableRepository = timetableRepository;
@@ -55,7 +55,7 @@ public class TimetableService : ITimetableService
         {
             return response;
         }
-        
+
         var mapSubject = _mapper.Map<List<GetTimetableDto>>(timetables);
 
         response.Data = mapSubject;
@@ -66,17 +66,17 @@ public class TimetableService : ITimetableService
     {
         var response = new BaseResponse<GetTimetableDto>();
 
-        var subject = await _subjectRepository.GetByIdAsync(request.SchoolClassId);
-        
+        var subject = await _subjectRepository.GetByIdAsync(request.SubjectId);
+
         if (subject == null)
         {
             response.IsError = true;
-            response.Description = $"Предмета с id - {request.SchoolClassId} не найден";
+            response.Description = $"Предмета с id - {request.SubjectId} не найден";
             return response;
         }
 
-        var schoolClass = await _schoolClassRepository.GetByIdAsync(request.ClassId);
-        
+        var schoolClass = await _schoolClassRepository.GetByIdAsync(request.SchoolClassId);
+
         if (schoolClass == null)
         {
             response.IsError = true;
@@ -84,19 +84,19 @@ public class TimetableService : ITimetableService
             return response;
         }
 
-        // if (request.ForDateAt <= DateTimeOffset.Now)
-        // {
-        //     response.IsError = true;
-        //     response.Description = $"Дата сдачи домашнего задания - {request.ForDateAt} установлено неверно";
-        //     return response; 
-        // }
+        if (request.StartedAt.Date < DateTime.Now.Date)
+        {
+            response.IsError = true;
+            response.Description = $"Установить расписание - {request.StartedAt.Date} на прошедшие дни нельзя";
+            return response;
+        }
 
         var timetable = _mapper.Map<Timetable>(request);
-        
+
         await _timetableRepository.CreateAsync(timetable);
-        
+
         var mapSubject = _mapper.Map<GetTimetableDto>(timetable);
-        
+
         response.Data = mapSubject;
         return response;
     }
@@ -104,9 +104,9 @@ public class TimetableService : ITimetableService
     public async Task<BaseResponse<GetTimetableDto>> UpdateTimetableByIdAsync(int timetableId, UpdateTimetableDto request)
     {
         var response = new BaseResponse<GetTimetableDto>();
-        
+
         var timetable = await _timetableRepository.GetByIdAsync(timetableId);
-        
+
         if (timetable == null)
         {
             response.IsError = true;
@@ -117,7 +117,7 @@ public class TimetableService : ITimetableService
         if (request.SubjectId.HasValue)
         {
             var subject = await _subjectRepository.GetByIdAsync((int)request.SubjectId);
-        
+
             if (subject == null)
             {
                 response.IsError = true;
@@ -128,34 +128,35 @@ public class TimetableService : ITimetableService
             timetable.SubjectId = (int)request.SubjectId;
         }
 
-        if (request.ClassId.HasValue)
+        if (request.SchoolClassId.HasValue)
         {
-            var schoolClass = await _schoolClassRepository.GetByIdAsync((int)request.ClassId);
-        
+            var schoolClass = await _schoolClassRepository.GetByIdAsync((int)request.SchoolClassId);
+
             if (schoolClass == null)
             {
                 response.IsError = true;
-                response.Description = $"Класса с id - {request.ClassId} не найден";
+                response.Description = $"Класса с id - {request.SchoolClassId} не найден";
                 return response;
             }
-            
-            timetable.ClassId = (int)request.ClassId;
+
+            timetable.SchoolClassId = (int)request.SchoolClassId;
         }
 
-        if (request.StartedAt != null)
+        if (request.StartedAt.HasValue)
         {
-            if (request.StartedAt <= DateTimeOffset.Now)
+            if (request.StartedAt.Value.Date < DateTime.Now.Date)
             {
                 response.IsError = true;
-                response.Description = $"Дата начала урока - {request.StartedAt} установлено неверно";
-                return response; 
+                response.Description =
+                    $"Установить расписание - {request.StartedAt.Value.Date} на прошедшие дни нельзя";
+                return response;
             }
-            
-            timetable.StartedAt = request.StartedAt;
+
+            timetable.StartedAt = (DateTime)request.StartedAt;
         }
 
         await _timetableRepository.UpdateAsync(timetable);
-        
+
         var mapTimetable = _mapper.Map<GetTimetableDto>(timetable);
 
         response.Data = mapTimetable;

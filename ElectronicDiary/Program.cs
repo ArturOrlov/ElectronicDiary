@@ -1,9 +1,9 @@
 using System.Text;
 using ElectronicDiary.AutoMapper;
+using ElectronicDiary.Bootstrap;
 using ElectronicDiary.Context;
 using ElectronicDiary.Entities.DbModels;
-using ElectronicDiary.Interfaces.IServices;
-using ElectronicDiary.Services;
+using ElectronicDiary.Extension;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -13,6 +13,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
+builder.Services.AddAutoMapper(typeof(AutoMappingProfile));
 // builder.Services.AddCors();
 builder.Services.AddControllers();
 
@@ -87,18 +88,15 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 
 builder.Services.AddAuthorization(); // подсмотерл с автобонусов
 builder.Services.AddAuthentication(); // подсмотерл с автобонусов
-
-builder.Services.AddAutoMapper(typeof(AutoMappingProfile));
-
-builder.Services.AddScoped<ITimetableService, TimetableService>();
-builder.Services.AddScoped<ISubjectService, SubjectService>();
-builder.Services.AddScoped<ISchoolClassService, SchoolClassService>();
-builder.Services.AddScoped<IHomeworkService, HomeworkService>();
-builder.Services.AddScoped<IRoleService, RoleService>();
-builder.Services.AddScoped<IUserService, UserService>();
-// builder.Services.AddScoped<ITimetableRepository, TimetableRepository>();
+builder.Services.AddCustomServices(); // подсмотерл с автобонусов
+builder.Services.AddCustomRepository(); // подсмотерл с автобонусов
 
 var app = builder.Build();
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+var serviceScope = app.Services.CreateScope();
+var services = serviceScope.ServiceProvider;
+var bootstrap = services.GetRequiredService<Bootstrap>();
+await bootstrap.SeedDb();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

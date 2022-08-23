@@ -10,20 +10,20 @@ public class RoleConstant
     /// <summary>
     /// Завуч
     /// </summary>
-    public const string HeadTeacher = "Head teacher";
+    public const string HeadTeacher = "head teacher";
     
     /// <summary>
     /// Учитель
     /// </summary>
-    public const string Teacher = "Teacher";
+    public const string Teacher = "teacher";
     
     /// <summary>
     /// Ученик
     /// </summary>
-    public const string Student = "Student";
+    public const string Student = "student";
     
     /// <summary>
     /// Родитель
     /// </summary>
-    public const string Parent = "Parent";
+    public const string Parent = "parent";
 }

@@ -11,21 +11,21 @@ public interface IUserService
     /// </summary>
     /// <param name="userId"></param>
     /// <returns></returns>
-    Task<BaseResponse<GetUserDto>> GetUserByIdAsync(int userId);
+    Task<BaseResponse<GetUserDto>> GetByIdAsync(int userId);
     
     /// <summary>
     /// 
     /// </summary>
     /// <param name="request"></param>
     /// <returns></returns>
-    Task<BaseResponse<List<GetUserDto>>> GetUserByPaginationAsync(BasePagination request);
+    Task<BaseResponse<List<GetUserDto>>> GetByPaginationAsync(BasePagination request);
     
     /// <summary>
     /// 
     /// </summary>
     /// <param name="request"></param>
     /// <returns></returns>
-    Task<BaseResponse<GetUserDto>> CreateUserAsync(CreateUserDto request);
+    Task<BaseResponse<GetUserDto>> CreateAsync(CreateUserDto request);
     
     /// <summary>
     /// 
@@ -33,12 +33,12 @@ public interface IUserService
     /// <param name="userId"></param>
     /// <param name="request"></param>
     /// <returns></returns>
-    Task<BaseResponse<GetUserDto>> UpdateUserByIdAsync(int userId, UpdateUserDto request);
+    Task<BaseResponse<GetUserDto>> UpdateByIdAsync(int userId, UpdateUserDto request);
     
     /// <summary>
     /// 
     /// </summary>
     /// <param name="userId"></param>
     /// <returns></returns>
-    Task<BaseResponse<string>> DeleteUserByIdAsync(int userId);
+    Task<BaseResponse<string>> DeleteByIdAsync(int userId);
 }

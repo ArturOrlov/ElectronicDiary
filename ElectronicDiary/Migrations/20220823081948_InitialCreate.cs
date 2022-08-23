@@ -14,7 +14,24 @@ namespace ElectronicDiary.Migrations
                 name: "School");
 
             migrationBuilder.EnsureSchema(
-                name: "User");
+                name: "Identity");
+
+            migrationBuilder.CreateTable(
+                name: "Cabinet",
+                schema: "School",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Number = table.Column<string>(type: "text", nullable: true),
+                    Campus = table.Column<string>(type: "text", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()"),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Cabinet", x => x.Id);
+                });
 
             migrationBuilder.CreateTable(
                 name: "Class",
@@ -23,8 +40,10 @@ namespace ElectronicDiary.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()"),
-                    UpdatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
+                    ClassCreateTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Symbol = table.Column<string>(type: "text", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()"),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()")
                 },
                 constraints: table =>
                 {
@@ -33,13 +52,13 @@ namespace ElectronicDiary.Migrations
 
             migrationBuilder.CreateTable(
                 name: "Role",
-                schema: "User",
+                schema: "Identity",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()"),
-                    UpdatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()"),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()"),
                     Name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     NormalizedName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     ConcurrencyStamp = table.Column<string>(type: "text", nullable: true)
@@ -56,8 +75,9 @@ namespace ElectronicDiary.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()"),
-                    UpdatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
+                    Name = table.Column<string>(type: "text", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()"),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()")
                 },
                 constraints: table =>
                 {
@@ -66,13 +86,13 @@ namespace ElectronicDiary.Migrations
 
             migrationBuilder.CreateTable(
                 name: "User",
-                schema: "User",
+                schema: "Identity",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()"),
-                    UpdatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()"),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()"),
                     UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
@@ -109,7 +129,7 @@ namespace ElectronicDiary.Migrations
                     table.ForeignKey(
                         name: "FK_AspNetRoleClaims_Role_RoleId",
                         column: x => x.RoleId,
-                        principalSchema: "User",
+                        principalSchema: "Identity",
                         principalTable: "Role",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -122,12 +142,12 @@ namespace ElectronicDiary.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    HomeworkDescription = table.Column<string>(type: "text", nullable: false),
+                    ForDateAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    HomeworkDescription = table.Column<string>(type: "text", nullable: true),
                     SubjectId = table.Column<int>(type: "integer", nullable: false),
-                    ClassId = table.Column<int>(type: "integer", nullable: false),
                     SchoolClassId = table.Column<int>(type: "integer", nullable: false),
-                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()"),
-                    UpdatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()"),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()")
                 },
                 constraints: table =>
                 {
@@ -155,12 +175,12 @@ namespace ElectronicDiary.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    StartedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    StartedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     SubjectId = table.Column<int>(type: "integer", nullable: false),
                     ClassId = table.Column<int>(type: "integer", nullable: false),
-                    SchoolClassId = table.Column<int>(type: "integer", nullable: false),
-                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()"),
-                    UpdatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
+                    SchoolClassId = table.Column<int>(type: "integer", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()"),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()")
                 },
                 constraints: table =>
                 {
@@ -170,8 +190,7 @@ namespace ElectronicDiary.Migrations
                         column: x => x.SchoolClassId,
                         principalSchema: "School",
                         principalTable: "Class",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Timetable_Subject_SubjectId",
                         column: x => x.SubjectId,
@@ -197,7 +216,7 @@ namespace ElectronicDiary.Migrations
                     table.ForeignKey(
                         name: "FK_AspNetUserClaims_User_UserId",
                         column: x => x.UserId,
-                        principalSchema: "User",
+                        principalSchema: "Identity",
                         principalTable: "User",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -218,7 +237,7 @@ namespace ElectronicDiary.Migrations
                     table.ForeignKey(
                         name: "FK_AspNetUserLogins_User_UserId",
                         column: x => x.UserId,
-                        principalSchema: "User",
+                        principalSchema: "Identity",
                         principalTable: "User",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -239,7 +258,76 @@ namespace ElectronicDiary.Migrations
                     table.ForeignKey(
                         name: "FK_AspNetUserTokens_User_UserId",
                         column: x => x.UserId,
-                        principalSchema: "User",
+                        principalSchema: "Identity",
+                        principalTable: "User",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PerformanceRating",
+                schema: "School",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Valuation = table.Column<long>(type: "bigint", nullable: false),
+                    TeacherId = table.Column<int>(type: "integer", nullable: false),
+                    TeacherUserId = table.Column<int>(type: "integer", nullable: true),
+                    StudentId = table.Column<int>(type: "integer", nullable: false),
+                    StudentUserId = table.Column<int>(type: "integer", nullable: true),
+                    SubjectId = table.Column<int>(type: "integer", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()"),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PerformanceRating", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PerformanceRating_Subject_SubjectId",
+                        column: x => x.SubjectId,
+                        principalSchema: "School",
+                        principalTable: "Subject",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_PerformanceRating_User_StudentUserId",
+                        column: x => x.StudentUserId,
+                        principalSchema: "Identity",
+                        principalTable: "User",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_PerformanceRating_User_TeacherUserId",
+                        column: x => x.TeacherUserId,
+                        principalSchema: "Identity",
+                        principalTable: "User",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserInfo",
+                schema: "Identity",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    UserId = table.Column<int>(type: "integer", nullable: false),
+                    FirstName = table.Column<string>(type: "text", nullable: true),
+                    LastName = table.Column<string>(type: "text", nullable: true),
+                    Patronymic = table.Column<string>(type: "text", nullable: true),
+                    Birthday = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    PassportNumber = table.Column<string>(type: "text", nullable: true),
+                    PassportSeries = table.Column<string>(type: "text", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()"),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserInfo", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UserInfo_User_UserId",
+                        column: x => x.UserId,
+                        principalSchema: "Identity",
                         principalTable: "User",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -247,15 +335,13 @@ namespace ElectronicDiary.Migrations
 
             migrationBuilder.CreateTable(
                 name: "UserRole",
-                schema: "User",
+                schema: "Identity",
                 columns: table => new
                 {
                     UserId = table.Column<int>(type: "integer", nullable: false),
                     RoleId = table.Column<int>(type: "integer", nullable: false),
-                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()"),
-                    UpdatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                    UserId1 = table.Column<int>(type: "integer", nullable: false),
-                    RoleId1 = table.Column<int>(type: "integer", nullable: false)
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()"),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()")
                 },
                 constraints: table =>
                 {
@@ -263,28 +349,14 @@ namespace ElectronicDiary.Migrations
                     table.ForeignKey(
                         name: "FK_UserRole_Role_RoleId",
                         column: x => x.RoleId,
-                        principalSchema: "User",
-                        principalTable: "Role",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_UserRole_Role_RoleId1",
-                        column: x => x.RoleId1,
-                        principalSchema: "User",
+                        principalSchema: "Identity",
                         principalTable: "Role",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_UserRole_User_UserId",
                         column: x => x.UserId,
-                        principalSchema: "User",
-                        principalTable: "User",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_UserRole_User_UserId1",
-                        column: x => x.UserId1,
-                        principalSchema: "User",
+                        principalSchema: "Identity",
                         principalTable: "User",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -318,8 +390,26 @@ namespace ElectronicDiary.Migrations
                 column: "SubjectId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_PerformanceRating_StudentUserId",
+                schema: "School",
+                table: "PerformanceRating",
+                column: "StudentUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PerformanceRating_SubjectId",
+                schema: "School",
+                table: "PerformanceRating",
+                column: "SubjectId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PerformanceRating_TeacherUserId",
+                schema: "School",
+                table: "PerformanceRating",
+                column: "TeacherUserId");
+
+            migrationBuilder.CreateIndex(
                 name: "RoleNameIndex",
-                schema: "User",
+                schema: "Identity",
                 table: "Role",
                 column: "NormalizedName",
                 unique: true);
@@ -338,34 +428,28 @@ namespace ElectronicDiary.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "EmailIndex",
-                schema: "User",
+                schema: "Identity",
                 table: "User",
                 column: "NormalizedEmail");
 
             migrationBuilder.CreateIndex(
                 name: "UserNameIndex",
-                schema: "User",
+                schema: "Identity",
                 table: "User",
                 column: "NormalizedUserName",
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_UserInfo_UserId",
+                schema: "Identity",
+                table: "UserInfo",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_UserRole_RoleId",
-                schema: "User",
+                schema: "Identity",
                 table: "UserRole",
                 column: "RoleId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserRole_RoleId1",
-                schema: "User",
-                table: "UserRole",
-                column: "RoleId1");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserRole_UserId1",
-                schema: "User",
-                table: "UserRole",
-                column: "UserId1");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -383,7 +467,15 @@ namespace ElectronicDiary.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "Cabinet",
+                schema: "School");
+
+            migrationBuilder.DropTable(
                 name: "Homework",
+                schema: "School");
+
+            migrationBuilder.DropTable(
+                name: "PerformanceRating",
                 schema: "School");
 
             migrationBuilder.DropTable(
@@ -391,8 +483,12 @@ namespace ElectronicDiary.Migrations
                 schema: "School");
 
             migrationBuilder.DropTable(
+                name: "UserInfo",
+                schema: "Identity");
+
+            migrationBuilder.DropTable(
                 name: "UserRole",
-                schema: "User");
+                schema: "Identity");
 
             migrationBuilder.DropTable(
                 name: "Class",
@@ -404,11 +500,11 @@ namespace ElectronicDiary.Migrations
 
             migrationBuilder.DropTable(
                 name: "Role",
-                schema: "User");
+                schema: "Identity");
 
             migrationBuilder.DropTable(
                 name: "User",
-                schema: "User");
+                schema: "Identity");
         }
     }
 }

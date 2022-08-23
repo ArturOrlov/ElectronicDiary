@@ -10,7 +10,7 @@ public class PerformanceRating : BaseModel
     /// <summary>
     /// Оценка
     /// </summary>
-    public float Valuation { get; set; }
+    public uint Valuation { get; set; }
     
     public int TeacherId { get; set; }
     public User TeacherUser { get; set; }

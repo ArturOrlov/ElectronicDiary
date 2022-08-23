@@ -2,6 +2,7 @@
 using ElectronicDiary.Dto.SchoolClass;
 using ElectronicDiary.Entities;
 using ElectronicDiary.Entities.Base;
+using ElectronicDiary.Entities.DbModels;
 using ElectronicDiary.Interfaces.IRepositories;
 using ElectronicDiary.Interfaces.IServices;
 
@@ -12,7 +13,7 @@ public class SchoolClassService : ISchoolClassService
     private readonly ISchoolClassRepository _schoolClassRepository;
     private readonly IMapper _mapper;
 
-    public SchoolClassService(ISchoolClassRepository schoolClassRepository, 
+    public SchoolClassService(ISchoolClassRepository schoolClassRepository,
         IMapper mapper)
     {
         _schoolClassRepository = schoolClassRepository;
@@ -48,14 +49,13 @@ public class SchoolClassService : ISchoolClassService
         {
             return response;
         }
-        
+
         var mapSchoolClass = _mapper.Map<List<GetSchoolClassDto>>(schoolClass);
 
         response.Data = mapSchoolClass;
         return response;
     }
 
-    // todo недоделано
     public async Task<BaseResponse<GetSchoolClassDto>> CreateSchoolClassAsync(CreateSchoolClassDto request)
     {
         var response = new BaseResponse<GetSchoolClassDto>();
@@ -66,25 +66,31 @@ public class SchoolClassService : ISchoolClassService
             response.Description = "Описание домашнего задание отсутствует";
             return response;
         }
-        
-        // if (request.ForDateAt <= DateTimeOffset.Now)
-        // {
-        //     response.IsError = true;
-        //     response.Description = $"Дата сдачи домашнего задания - {request.ForDateAt} установлено неверно";
-        //     return response; 
-        // }
-        //
-        // await _schoolClassRepository.CreateAsync(homework);
-        //
-        // response.Data = mapHomework;
+
+        var result = CheckSchoolClassYear(request.Symbol, request.ClassCreateTime);
+
+        if (result.Item2 == true)
+        {
+            response.IsError = true;
+            response.Description = result.Item1;
+            return response;
+        }
+
+        var newSchoolClass = _mapper.Map<SchoolClass>(request);
+
+        await _schoolClassRepository.CreateAsync(newSchoolClass);
+
+        var mapSchoolClass = _mapper.Map<GetSchoolClassDto>(newSchoolClass);
+
+        response.Data = mapSchoolClass;
         return response;
     }
 
-    // todo недоделано
-    public async Task<BaseResponse<GetSchoolClassDto>> UpdateSchoolClassByIdAsync(int schoolClassIdId, UpdateSchoolClassDto request)
+    public async Task<BaseResponse<GetSchoolClassDto>> UpdateSchoolClassByIdAsync(int schoolClassIdId,
+        UpdateSchoolClassDto request)
     {
         var response = new BaseResponse<GetSchoolClassDto>();
-        
+
         var schoolClass = await _schoolClassRepository.GetByIdAsync(schoolClassIdId);
 
         if (schoolClass == null)
@@ -98,16 +104,30 @@ public class SchoolClassService : ISchoolClassService
         {
             schoolClass.Symbol = request.Symbol;
         }
-        
-        if (request.ClassCreateTime != null)
+
+        if (request.ClassCreateTime.HasValue)
         {
-            schoolClass.CreatedAt = request.ClassCreateTime;
+            if (string.IsNullOrEmpty(schoolClass.Symbol))
+            {
+                request.Symbol = schoolClass.Symbol;
+            }
+
+            var result = CheckSchoolClassYear(request.Symbol, (DateTime)request.ClassCreateTime);
+
+            if (result.Item2 == true)
+            {
+                response.IsError = true;
+                response.Description = result.Item1;
+                return response;
+            }
+
+            schoolClass.CreatedAt = (DateTime)request.ClassCreateTime;
         }
 
         await _schoolClassRepository.UpdateAsync(schoolClass);
 
         var mapSchoolClass = _mapper.Map<GetSchoolClassDto>(schoolClass);
-        
+
         response.Data = mapSchoolClass;
         return response;
     }
@@ -129,5 +149,53 @@ public class SchoolClassService : ISchoolClassService
 
         response.Data = "Удалено";
         return response;
+    }
+
+    private (string, bool) CheckSchoolClassYear(string symbol, DateTime classCreateTime)
+    {
+        var schoolClasses = _schoolClassRepository.Get(s => s.Symbol == symbol).ToList();
+
+        if (schoolClasses.Any())
+        {
+            int i = 0;
+
+            var newTime = classCreateTime - DateTime.Now;
+            var newTimeDays = newTime.Days;
+
+            if (newTimeDays < 0)
+            {
+                newTimeDays = Math.Abs(newTimeDays);
+            }
+
+            foreach (var oldClass in schoolClasses)
+            {
+                var oldTime = oldClass.ClassCreateTime - DateTime.Now;
+                var oldTimeDays = oldTime.Days;
+
+                if (oldTimeDays < 0)
+                {
+                    oldTimeDays = Math.Abs(oldTimeDays);
+                }
+
+                var different = oldTimeDays - newTimeDays;
+
+                if (different < 0)
+                {
+                    different = Math.Abs(different);
+                }
+
+                if (different <= 365)
+                {
+                    i++;
+                }
+            }
+
+            if (i > 0)
+            {
+                return ($"Класс {symbol} с датой {classCreateTime} уже есть", true);
+            }
+        }
+
+        return ("Совпадений не обнаружено", false);
     }
 }

@@ -11,4 +11,9 @@ public class Cabinet : BaseModel
     /// Номер кабинета
     /// </summary>
     public string Number { get; set; }
+    
+    /// <summary>
+    /// Корпус
+    /// </summary>
+    public string Campus { get; set; }
 }

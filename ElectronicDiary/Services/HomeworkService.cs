@@ -16,7 +16,7 @@ public class HomeworkService : IHomeworkService
     private readonly IMapper _mapper;
 
     public HomeworkService(IHomeworkRepository homeworkRepository,
-        ISubjectRepository subjectRepository, 
+        ISubjectRepository subjectRepository,
         ISchoolClassRepository schoolClassRepository,
         IMapper mapper)
     {
@@ -55,13 +55,15 @@ public class HomeworkService : IHomeworkService
         {
             return response;
         }
-        
+
         var mapHomework = _mapper.Map<List<GetHomeworkDto>>(homework);
 
         response.Data = mapHomework;
         return response;
     }
 
+    // todo добавить ограничения
+    // 1. нелзя дать классу дз больше 2 по одному и тому же предмеу, в одно и тоже время
     public async Task<BaseResponse<GetHomeworkDto>> CreateHomeworkAsync(CreateHomeworkDto request)
     {
         var response = new BaseResponse<GetHomeworkDto>();
@@ -74,7 +76,7 @@ public class HomeworkService : IHomeworkService
         }
 
         var subject = await _subjectRepository.GetByIdAsync(request.SubjectId);
-        
+
         if (subject == null)
         {
             response.IsError = true;
@@ -83,7 +85,7 @@ public class HomeworkService : IHomeworkService
         }
 
         var schoolClass = await _schoolClassRepository.GetByIdAsync(request.SchoolClassId);
-        
+
         if (schoolClass == null)
         {
             response.IsError = true;
@@ -91,24 +93,17 @@ public class HomeworkService : IHomeworkService
             return response;
         }
 
-        if (request.ForDateAt <= DateTimeOffset.Now)
+        if (request.ForDateAt.Date <= DateTime.Now.Date)
         {
             response.IsError = true;
-            response.Description = $"Дата сдачи домашнего задания - {request.ForDateAt} установлено неверно";
-            return response; 
+            response.Description = $"Дата сдачи домашнего задания - {request.ForDateAt.Date} установлено неверно";
+            return response;
         }
 
         var homework = _mapper.Map<Homework>(request);
-        // var homework = new Homework()
-        // {
-        //     ForDateAt = request.ForDateAt,
-        //     HomeworkDescription = request.HomeworkDescription,
-        //     SubjectId = request.SubjectId,
-        //     SchoolClassId = request.SchoolClassId,
-        // };
 
         await _homeworkRepository.CreateAsync(homework);
-        
+
         var mapHomework = _mapper.Map<GetHomeworkDto>(homework);
 
         response.Data = mapHomework;
@@ -118,9 +113,9 @@ public class HomeworkService : IHomeworkService
     public async Task<BaseResponse<GetHomeworkDto>> UpdateHomeworkByIdAsync(int homeworkId, UpdateHomeworkDto request)
     {
         var response = new BaseResponse<GetHomeworkDto>();
-        
+
         var homework = await _homeworkRepository.GetByIdAsync(homeworkId);
-        
+
         if (homework == null)
         {
             response.IsError = true;
@@ -138,7 +133,7 @@ public class HomeworkService : IHomeworkService
         if (request.SubjectId.HasValue)
         {
             var subject = await _subjectRepository.GetByIdAsync((int)request.SubjectId);
-        
+
             if (subject == null)
             {
                 response.IsError = true;
@@ -152,31 +147,32 @@ public class HomeworkService : IHomeworkService
         if (request.SchoolClassId.HasValue)
         {
             var schoolClass = await _schoolClassRepository.GetByIdAsync((int)request.SchoolClassId);
-        
+
             if (schoolClass == null)
             {
                 response.IsError = true;
                 response.Description = $"Класса с id - {request.SchoolClassId} не найден";
                 return response;
             }
-            
+
             homework.SchoolClassId = (int)request.SchoolClassId;
         }
 
         if (request.ForDateAt != null)
         {
-            if (request.ForDateAt <= DateTimeOffset.Now)
+            if (request.ForDateAt.Value.Date <= DateTime.Now.Date)
             {
                 response.IsError = true;
-                response.Description = $"Дата сдачи домашнего задания - {request.ForDateAt} установлено неверно";
-                return response; 
+                response.Description =
+                    $"Дата сдачи домашнего задания - {request.ForDateAt.Value.Date} установлено неверно";
+                return response;
             }
-            
-            homework.ForDateAt = request.ForDateAt;
+
+            homework.ForDateAt = (DateTime)request.ForDateAt;
         }
 
         await _homeworkRepository.UpdateAsync(homework);
-        
+
         var mapHomework = _mapper.Map<GetHomeworkDto>(homework);
 
         response.Data = mapHomework;
