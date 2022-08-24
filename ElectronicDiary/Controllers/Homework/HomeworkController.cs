@@ -2,11 +2,13 @@
 using ElectronicDiary.Entities;
 using ElectronicDiary.Extension;
 using ElectronicDiary.Interfaces.IServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
-namespace ElectronicDiary.Controller.Homework;
+namespace ElectronicDiary.Controllers.Homework;
 
+[Authorize]
 [ApiController]
 [Route("api/homework")]
 public class HomeworkController : ControllerBaseExtension
@@ -35,9 +37,9 @@ public class HomeworkController : ControllerBaseExtension
     [HttpGet]
     [Route("")]
     [SwaggerOperation(
-        Summary = "Получить домашние задание по филтрам",
-        Description = "Получить домашние задание по филтрам",
-        OperationId = "Homework.Get",
+        Summary = "Получить домашние задания по филтрам",
+        Description = "Получить домашние задания по филтрам",
+        OperationId = "Homework.Get.List",
         Tags = new[] { "Homework" })]
     public async Task<IActionResult> GetAll([FromQuery] BasePagination request)
     {

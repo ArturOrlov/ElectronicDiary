@@ -2,6 +2,7 @@
 using ElectronicDiary.Interfaces.IServices;
 using ElectronicDiary.Repositories;
 using ElectronicDiary.Services;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace ElectronicDiary.Extension;
 
@@ -14,6 +15,7 @@ public static class ServiceProviderExtensions
     public static void AddCustomServices(this IServiceCollection services)
     {
         services.AddTransient<Bootstrap.Bootstrap>();
+        services.AddSingleton<IMemoryCache, MemoryCache>();
         
         services.AddTransient<IRoleService, RoleService>();
         services.AddTransient<IUserService, UserService>();

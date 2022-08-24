@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
-namespace ElectronicDiary.Controller._Dev;
+namespace ElectronicDiary.Controllers._Dev;
 
 [ApiController]
 [Route("api/dev")]

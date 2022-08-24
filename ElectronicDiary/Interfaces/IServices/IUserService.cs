@@ -1,11 +1,20 @@
 ﻿using ElectronicDiary.Dto.User;
 using ElectronicDiary.Entities;
 using ElectronicDiary.Entities.Base;
+using ElectronicDiary.Entities.DbModels;
 
 namespace ElectronicDiary.Interfaces.IServices;
 
 public interface IUserService
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="login"></param>
+    /// <param name="password"></param>
+    /// <returns></returns>
+    Task<BaseResponse<User>> GetByLoginAsync(string login, string password);
+    
     /// <summary>
     /// 
     /// </summary>

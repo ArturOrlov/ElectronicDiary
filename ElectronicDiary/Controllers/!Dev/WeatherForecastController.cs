@@ -1,9 +1,12 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
-namespace ElectronicDiary.Controllers;
+namespace ElectronicDiary.Controllers._Dev;
 
+[Authorize]
 [ApiController]
-[Route("[controller]")]
+[Route("api/dev")]
 public class WeatherForecastController : ControllerBase
 {
     private static readonly string[] Summaries = new[]
@@ -18,7 +21,13 @@ public class WeatherForecastController : ControllerBase
         _logger = logger;
     }
 
-    [HttpGet(Name = "GetWeatherForecast")]
+    [HttpGet]
+    [Route("weather-forecast")]
+    [SwaggerOperation(
+        Summary = "Получить силу (ToT)/~~~ воды",
+        Description = "Получить силу воды",
+        OperationId = "Dev.Get.Weather",
+        Tags = new[] { "Dev" })]
     public IEnumerable<WeatherForecast> Get()
     {
         return Enumerable.Range(1, 5).Select(index => new WeatherForecast

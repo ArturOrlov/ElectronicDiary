@@ -2,12 +2,13 @@
 using ElectronicDiary.Entities;
 using ElectronicDiary.Extension;
 using ElectronicDiary.Interfaces.IServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
-namespace ElectronicDiary.Controller.Subject;
+namespace ElectronicDiary.Controllers.Subject;
 
-
+[Authorize]
 [ApiController]
 [Route("api/subject")]
 public class SubjectController : ControllerBaseExtension
@@ -36,9 +37,9 @@ public class SubjectController : ControllerBaseExtension
     [HttpGet]
     [Route("")]
     [SwaggerOperation(
-        Summary = "Получить школьный предметы по филтрам",
-        Description = "Получить школьный предметы по филтрам",
-        OperationId = "Subject.Get",
+        Summary = "Получить школьные предметы по филтрам",
+        Description = "Получить школьные предметы по филтрам",
+        OperationId = "Subject.Get.List",
         Tags = new[] { "Subject" })]
     public async Task<IActionResult> GetAll([FromQuery] BasePagination request)
     {

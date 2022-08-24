@@ -2,11 +2,13 @@
 using ElectronicDiary.Entities;
 using ElectronicDiary.Extension;
 using ElectronicDiary.Interfaces.IServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
-namespace ElectronicDiary.Controller.Subject;
+namespace ElectronicDiary.Controllers.Subject;
 
+[Authorize]
 [ApiController]
 [Route("api/performance-rating")]
 public class PerformanceRatingController : ControllerBaseExtension
@@ -35,9 +37,9 @@ public class PerformanceRatingController : ControllerBaseExtension
     [HttpGet]
     [Route("")]
     [SwaggerOperation(
-        Summary = "Получить оценку по предметуы по филтрам",
-        Description = "Получить оценку по предметуы по филтрам",
-        OperationId = "PerformanceRating.Get",
+        Summary = "Получить оценки по предмету по филтрам",
+        Description = "Получить оценки по предмету по филтрам",
+        OperationId = "PerformanceRating.Get.List",
         Tags = new[] { "PerformanceRating" })]
     public async Task<IActionResult> GetAll([FromQuery] BasePagination request)
     {

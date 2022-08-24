@@ -5,6 +5,7 @@ using ElectronicDiary.Entities.Base;
 using ElectronicDiary.Entities.DbModels;
 using ElectronicDiary.Interfaces.IRepositories;
 using ElectronicDiary.Interfaces.IServices;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace ElectronicDiary.Services;
 
@@ -13,22 +14,31 @@ public class HomeworkService : IHomeworkService
     private readonly IHomeworkRepository _homeworkRepository;
     private readonly ISubjectRepository _subjectRepository;
     private readonly ISchoolClassRepository _schoolClassRepository;
+    private readonly IMemoryCache _memoryCache;
     private readonly IMapper _mapper;
 
     public HomeworkService(IHomeworkRepository homeworkRepository,
         ISubjectRepository subjectRepository,
         ISchoolClassRepository schoolClassRepository,
+        IMemoryCache memoryCache,
         IMapper mapper)
     {
         _homeworkRepository = homeworkRepository;
         _subjectRepository = subjectRepository;
         _schoolClassRepository = schoolClassRepository;
+        _memoryCache = memoryCache;
         _mapper = mapper;
     }
 
     public async Task<BaseResponse<GetHomeworkDto>> GetHomeworkByIdAsync(int homeworkId)
     {
         var response = new BaseResponse<GetHomeworkDto>();
+
+        if (_memoryCache.TryGetValue(homeworkId, out GetHomeworkDto cacheHomework))
+        {
+            response.Data = cacheHomework;
+            return response;
+        }
 
         var homework = await _homeworkRepository.GetByIdAsync(homeworkId);
 
@@ -41,6 +51,8 @@ public class HomeworkService : IHomeworkService
 
         var mapHomework = _mapper.Map<GetHomeworkDto>(homework);
 
+        _memoryCache.Set(homeworkId, mapHomework, new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromDays(1)));
+        
         response.Data = mapHomework;
         return response;
     }
@@ -62,8 +74,6 @@ public class HomeworkService : IHomeworkService
         return response;
     }
 
-    // todo добавить ограничения
-    // 1. нелзя дать классу дз больше 2 по одному и тому же предмеу, в одно и тоже время
     public async Task<BaseResponse<GetHomeworkDto>> CreateHomeworkAsync(CreateHomeworkDto request)
     {
         var response = new BaseResponse<GetHomeworkDto>();
@@ -97,6 +107,15 @@ public class HomeworkService : IHomeworkService
         {
             response.IsError = true;
             response.Description = $"Дата сдачи домашнего задания - {request.ForDateAt.Date} установлено неверно";
+            return response;
+        }
+
+        var result = CheckHomeworkOnRepeat(request.SchoolClassId, request.SubjectId, request.ForDateAt);
+
+        if (result.Item2)
+        {
+            response.IsError = true;
+            response.Description = result.Item1;
             return response;
         }
 
@@ -163,17 +182,27 @@ public class HomeworkService : IHomeworkService
             if (request.ForDateAt.Value.Date <= DateTime.Now.Date)
             {
                 response.IsError = true;
-                response.Description =
-                    $"Дата сдачи домашнего задания - {request.ForDateAt.Value.Date} установлено неверно";
+                response.Description = $"Дата сдачи домашнего задания - {request.ForDateAt.Value.Date} установлено неверно";
                 return response;
             }
 
             homework.ForDateAt = (DateTime)request.ForDateAt;
         }
+        
+        var result = CheckHomeworkOnRepeat(homework.SchoolClassId, homework.SubjectId, homework.ForDateAt);
+
+        if (result.Item2)
+        {
+            response.IsError = true;
+            response.Description = result.Item1;
+            return response;
+        }
 
         await _homeworkRepository.UpdateAsync(homework);
 
         var mapHomework = _mapper.Map<GetHomeworkDto>(homework);
+        
+        _memoryCache.Set(homeworkId, mapHomework, new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromDays(1)));
 
         response.Data = mapHomework;
         return response;
@@ -193,8 +222,24 @@ public class HomeworkService : IHomeworkService
         }
 
         await _homeworkRepository.DeleteAsync(homework);
+        
+        _memoryCache.Remove(homeworkId);
 
         response.Data = "Удалено";
         return response;
+    }
+
+    private (string, bool) CheckHomeworkOnRepeat(int schoolClassId, int subjectId,  DateTime forDateAt)
+    {
+        var homeworks = _homeworkRepository.Get(h => h.SubjectId == subjectId
+                                                && h.SchoolClassId == schoolClassId
+                                                && h.ForDateAt.Date == forDateAt.Date).ToList();
+
+        if (homeworks.Any())
+        {
+            return ($"Для указанного класса {schoolClassId} по предмету {subjectId} в указанное время {forDateAt.Date} уже есть ДЗ", true);
+        }
+        
+        return ("Совпадений не обнаружено", false);
     }
 }

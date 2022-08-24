@@ -2,11 +2,13 @@
 using ElectronicDiary.Entities;
 using ElectronicDiary.Extension;
 using ElectronicDiary.Interfaces.IServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
-namespace ElectronicDiary.Controller.Timetable;
+namespace ElectronicDiary.Controllers.Timetable;
 
+[Authorize]
 [ApiController]
 [Route("api/timetable")]
 public class TimetableController : ControllerBaseExtension
@@ -35,9 +37,9 @@ public class TimetableController : ControllerBaseExtension
     [HttpGet]
     [Route("")]
     [SwaggerOperation(
-        Summary = "Получить расписаниеы по филтрам",
-        Description = "Получить расписаниеы по филтрам",
-        OperationId = "Timetable.Get",
+        Summary = "Получить расписание по филтрам",
+        Description = "Получить расписание по филтрам",
+        OperationId = "Timetable.Get.List",
         Tags = new[] { "Timetable" })]
     public async Task<IActionResult> GetAll([FromQuery] BasePagination request)
     {

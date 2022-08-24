@@ -2,11 +2,13 @@
 using ElectronicDiary.Entities;
 using ElectronicDiary.Extension;
 using ElectronicDiary.Interfaces.IServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
-namespace ElectronicDiary.Controller.SchoolClass;
+namespace ElectronicDiary.Controllers.SchoolClass;
 
+[Authorize]
 [ApiController]
 [Route("api/school-class")]
 public class SchoolClassController : ControllerBaseExtension
@@ -37,7 +39,7 @@ public class SchoolClassController : ControllerBaseExtension
     [SwaggerOperation(
         Summary = "Получить классы по филтрам",
         Description = "Получить классы по филтрам",
-        OperationId = "SchoolClass.Get",
+        OperationId = "SchoolClass.Get.List",
         Tags = new[] { "SchoolClass" })]
     public async Task<IActionResult> GetAll([FromQuery] BasePagination request)
     {

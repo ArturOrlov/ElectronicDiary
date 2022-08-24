@@ -2,11 +2,13 @@
 using ElectronicDiary.Entities;
 using ElectronicDiary.Extension;
 using ElectronicDiary.Interfaces.IServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
-namespace ElectronicDiary.Controller.Role;
+namespace ElectronicDiary.Controllers.Role;
 
+[Authorize]
 [ApiController]
 [Route("api/role")]
 public class RoleController : ControllerBaseExtension
@@ -37,7 +39,7 @@ public class RoleController : ControllerBaseExtension
     [SwaggerOperation(
         Summary = "Получить роли по филтрам",
         Description = "Получить роли по филтрам",
-        OperationId = "Role.Get",
+        OperationId = "Role.Get.List",
         Tags = new[] { "Role" })]
     public async Task<IActionResult> GetAll([FromQuery] BasePagination request)
     {

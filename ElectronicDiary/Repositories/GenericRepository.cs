@@ -1,7 +1,6 @@
 ﻿using ElectronicDiary.Context;
 using ElectronicDiary.Entities;
 using ElectronicDiary.Interfaces.IRepositories;
-using ElectronicDiary.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace ElectronicDiary.Repositories;

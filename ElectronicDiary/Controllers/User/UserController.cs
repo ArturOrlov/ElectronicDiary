@@ -2,11 +2,13 @@
 using ElectronicDiary.Entities;
 using ElectronicDiary.Extension;
 using ElectronicDiary.Interfaces.IServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
-namespace ElectronicDiary.Controller.User;
+namespace ElectronicDiary.Controllers.User;
 
+[Authorize]
 [ApiController]
 [Route("api/user")]
 public class UserController : ControllerBaseExtension
@@ -37,7 +39,7 @@ public class UserController : ControllerBaseExtension
     [SwaggerOperation(
         Summary = "Получить пользователяы по филтрам",
         Description = "Получить пользователяы по филтрам",
-        OperationId = "User.Get",
+        OperationId = "User.Get.List",
         Tags = new[] { "User" })]
     public async Task<IActionResult> GetAll([FromQuery] BasePagination request)
     {

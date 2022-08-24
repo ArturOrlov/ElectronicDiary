@@ -23,6 +23,32 @@ public class UserService : IUserService
         _roleManager = roleManager;
     }
 
+    public async Task<BaseResponse<User>> GetByLoginAsync(string login, string password)
+    {
+        var response = new BaseResponse<User>();
+        
+        var user = await _userManager.FindByNameAsync(login);
+
+        if (user == null)
+        {
+            response.IsError = true;
+            response.Description = "Невыерный логин или пароль";
+            return response;
+        }
+        
+        var isPasswordCorrect = await _userManager.CheckPasswordAsync(user, password);
+
+        if (isPasswordCorrect == false)
+        {
+            response.IsError = true;
+            response.Description = "Невыерный логин или пароль";
+            return response;
+        }
+        
+        response.Data = user;
+        return response;
+    }
+
     public async Task<BaseResponse<GetUserDto>> GetByIdAsync(int userId)
     {
         var response = new BaseResponse<GetUserDto>();
