@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 namespace ElectronicDiary.Context;
 
 public class ElectronicDiaryDbContext : IdentityDbContext<User, Role, int, IdentityUserClaim<int>, UserRole, IdentityUserLogin<int>,
-    IdentityRoleClaim<int>, IdentityUserToken<int>>//, DbContext
+    IdentityRoleClaim<int>, IdentityUserToken<int>>
 {
     public ElectronicDiaryDbContext(DbContextOptions<ElectronicDiaryDbContext> options) : base(options)
     {
@@ -19,6 +19,7 @@ public class ElectronicDiaryDbContext : IdentityDbContext<User, Role, int, Ident
     public DbSet<User> User { get; set; }
     public DbSet<UserRole> UserRole { get; set; }
     public DbSet<UserInfo> UserInfo { get; set; }
+    public DbSet<UserClass> UserClass { get; set; }
     public DbSet<SchoolClass> SchoolClass { get; set; }
     public DbSet<Homework> Homework { get; set; }
     public DbSet<Subject> Subject { get; set; }
@@ -54,6 +55,13 @@ public class ElectronicDiaryDbContext : IdentityDbContext<User, Role, int, Ident
         builder.Entity<UserInfo>(entity =>
         {
             entity.ToTable("UserInfo", IdentitySchema);
+            entity.Property(p => p.CreatedAt).HasDefaultValueSql("NOW()").ValueGeneratedOnAdd();
+            entity.Property(p => p.UpdatedAt).HasDefaultValueSql("NOW()").ValueGeneratedOnAdd();
+        });
+        
+        builder.Entity<UserClass>(entity =>
+        {
+            entity.ToTable("UserClass", IdentitySchema);
             entity.Property(p => p.CreatedAt).HasDefaultValueSql("NOW()").ValueGeneratedOnAdd();
             entity.Property(p => p.UpdatedAt).HasDefaultValueSql("NOW()").ValueGeneratedOnAdd();
         });

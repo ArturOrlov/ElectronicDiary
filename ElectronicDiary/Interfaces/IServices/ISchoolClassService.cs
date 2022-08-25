@@ -1,4 +1,5 @@
-﻿using ElectronicDiary.Dto.SchoolClass;
+﻿using ElectronicDiary.Dto.Report;
+using ElectronicDiary.Dto.SchoolClass;
 using ElectronicDiary.Entities;
 using ElectronicDiary.Entities.Base;
 
@@ -19,6 +20,8 @@ public interface ISchoolClassService
     /// <param name="request"></param>
     /// <returns></returns>
     Task<BaseResponse<List<GetSchoolClassDto>>> GetSchoolClassByPaginationAsync(BasePagination request);
+    
+    Task<BaseResponse<List<GetSchoolClassDto>>> GetSchoolClassReportAsync(GetSchoolClassReportDto request);
     
     /// <summary>
     /// 

@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using ElectronicDiary.Dto.PerformanceRating;
+using ElectronicDiary.Dto.Report;
+using ElectronicDiary.Dto.Subject;
 using ElectronicDiary.Entities;
 using ElectronicDiary.Entities.Base;
 using ElectronicDiary.Entities.DbModels;
@@ -11,16 +13,19 @@ namespace ElectronicDiary.Services;
 public class PerformanceRatingService : IPerformanceRatingService
 {
     private readonly IPerformanceRatingRepository _performanceRatingRepository;
+    private readonly IUserClassRepository _userClassRepository;
     private readonly ISubjectRepository _subjectRepository;
     private readonly IUserService _userService;
     private readonly IMapper _mapper;
 
-    public PerformanceRatingService(IPerformanceRatingRepository performanceRatingRepository,
-        ISubjectRepository subjectRepository,
+    public PerformanceRatingService(IPerformanceRatingRepository performanceRatingRepository, 
+        IUserClassRepository userClassRepository,
+        ISubjectRepository subjectRepository, 
         IUserService userService,
         IMapper mapper)
     {
         _performanceRatingRepository = performanceRatingRepository;
+        _userClassRepository = userClassRepository;
         _subjectRepository = subjectRepository;
         _userService = userService;
         _mapper = mapper;
@@ -59,6 +64,60 @@ public class PerformanceRatingService : IPerformanceRatingService
         var mapPerformanceRating = _mapper.Map<List<GetPerformanceRatingDto>>(performanceRatings);
 
         response.Data = mapPerformanceRating;
+        return response;
+    }
+
+    public async Task<BaseResponse<List<ResponsePerformanceRatingReportDto>>> GetPerformanceRatingReportAsync(GetPerformanceRatingReportDto request)
+    {
+        var response = new BaseResponse<List<ResponsePerformanceRatingReportDto>>();
+
+        var user = await _userService.GetByIdAsync(request.UserId);
+
+        if (user.Data == null)
+        {
+            response.IsError = true;
+            response.Description = $"Ученик с id - {request.UserId} не найден";
+            return response;
+        }
+        
+        // Проверка на роль
+        
+        // -------------------
+        
+        //
+        var subjects = await _subjectRepository.GetRangeAsync();
+
+        if (!subjects.ToList().Any())
+        {
+            response.IsError = true;
+            response.Description = $"Учитель с id - {request.UserId} не найден";
+            return response;
+        }
+
+        var performanceRatings = _performanceRatingRepository.Get(pr => pr.StudentId == request.UserId
+                                                        && pr.CreatedAt.Year == request.Year).ToList();
+
+        if (!performanceRatings.Any())
+        {
+            response.IsError = true;
+            response.Description = $"Оценок у ученика с id - {request.UserId} в указанный год - {request.Year} не найдено";
+            return response;
+        }
+
+        var report = new List<ResponsePerformanceRatingReportDto>();
+        
+        foreach (var performanceRating in performanceRatings)
+        {
+            var subject = subjects.FirstOrDefault(s => s.Id == performanceRating.SubjectId);
+            
+            report.Add(new ResponsePerformanceRatingReportDto()
+            {
+                Rating = _mapper.Map<GetPerformanceRatingBaseDto>(performanceRating),
+                Subject = _mapper.Map<GetSubjectDto>(subject),
+            });
+        }
+        
+        response.Data = report;
         return response;
     }
 
@@ -101,6 +160,17 @@ public class PerformanceRatingService : IPerformanceRatingService
         }
 
         var performanceRating = _mapper.Map<PerformanceRating>(request);
+        
+        var userClass = _userClassRepository.Get(uc => uc.UserId == performanceRating.StudentId).FirstOrDefault();
+        
+        if (userClass == null)
+        {
+            response.IsError = true;
+            response.Description = $"Пользователь с id - {request.StudentId} не находится в школьном классе";
+            return response;
+        }
+        
+        performanceRating.SchoolClassId = userClass.SchoolClassId;
 
         await _performanceRatingRepository.CreateAsync(performanceRating);
 
@@ -147,6 +217,17 @@ public class PerformanceRatingService : IPerformanceRatingService
                 response.Description = $"Ученик с id - {request.StudentId} не найден";
                 return response;
             }
+            
+            var userClass = _userClassRepository.Get(uc => uc.UserId == student.Data.Id).FirstOrDefault();
+        
+            if (userClass == null)
+            {
+                response.IsError = true;
+                response.Description = $"Пользователь с id - {request.StudentId} не находится в школьном классе";
+                return response;
+            }
+        
+            performanceRating.SchoolClassId = userClass.SchoolClassId;
 
             performanceRating.StudentId = (int)request.StudentId;
         }

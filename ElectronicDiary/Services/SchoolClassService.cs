@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using ElectronicDiary.Dto.Report;
 using ElectronicDiary.Dto.SchoolClass;
 using ElectronicDiary.Entities;
 using ElectronicDiary.Entities.Base;
@@ -11,12 +12,15 @@ namespace ElectronicDiary.Services;
 public class SchoolClassService : ISchoolClassService
 {
     private readonly ISchoolClassRepository _schoolClassRepository;
+    private readonly ISubjectRepository _subjectRepository;
     private readonly IMapper _mapper;
 
-    public SchoolClassService(ISchoolClassRepository schoolClassRepository,
+    public SchoolClassService(ISchoolClassRepository schoolClassRepository, 
+        ISubjectRepository subjectRepository,
         IMapper mapper)
     {
         _schoolClassRepository = schoolClassRepository;
+        _subjectRepository = subjectRepository;
         _mapper = mapper;
     }
 
@@ -53,6 +57,37 @@ public class SchoolClassService : ISchoolClassService
         var mapSchoolClass = _mapper.Map<List<GetSchoolClassDto>>(schoolClass);
 
         response.Data = mapSchoolClass;
+        return response;
+    }
+
+    public async Task<BaseResponse<List<GetSchoolClassDto>>> GetSchoolClassReportAsync(GetSchoolClassReportDto request)
+    {
+        var response = new BaseResponse<List<GetSchoolClassDto>>();
+        
+        var schoolClasses = _schoolClassRepository.Get(sc => request.SchoolClassId.Contains(sc.Id));
+
+        if (!schoolClasses.Any())
+        {
+            response.IsError = true;
+            response.Description = $"Классы с id - {request.SchoolClassId} не найдены";
+            return response;
+        }
+        
+        var subjects = _subjectRepository.Get(s => request.SubjectId.Contains(s.Id));
+
+        if (!subjects.Any())
+        {
+            response.IsError = true;
+            response.Description = $"Предметы с id - {request.SubjectId} не найдены";
+            return response;
+        }
+        
+        //todo добавить сбор данных
+        //
+        //
+        //
+        
+        response.Data = new List<GetSchoolClassDto>();
         return response;
     }
 

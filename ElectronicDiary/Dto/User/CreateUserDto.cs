@@ -1,4 +1,6 @@
-﻿namespace ElectronicDiary.Dto.User;
+﻿using ElectronicDiary.Dto.UserInfo;
+
+namespace ElectronicDiary.Dto.User;
 
 public class CreateUserDto
 {
@@ -9,4 +11,6 @@ public class CreateUserDto
     
     public string Password { get; set; }
     public string ConfirmPassword { get; set; }
+
+    public CreateUserInfoDto UserInfo { get; set; }
 }

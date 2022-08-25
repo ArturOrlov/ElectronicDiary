@@ -47,6 +47,20 @@ public class TimetableController : ControllerBaseExtension
 
         return Response(response);
     }
+    
+    [HttpGet]
+    [Route("date")]
+    [SwaggerOperation(
+        Summary = "Получить расписание по его id",
+        Description = "Получить расписание по его id",
+        OperationId = "Timetable.Get.ByDate",
+        Tags = new[] { "Timetable" })]
+    public async Task<IActionResult> Get([FromRoute] DateTime date)
+    {
+        var response = await _timetableService.GetTimetableByTimeAsync(date);
+
+        return Response(response);
+    }
 
     [HttpPost]
     [Route("")]

@@ -1,4 +1,5 @@
-﻿using ElectronicDiary.Dto.Subject;
+﻿using ElectronicDiary.Dto.Report;
+using ElectronicDiary.Dto.Subject;
 using ElectronicDiary.Entities;
 using ElectronicDiary.Entities.Base;
 
@@ -19,6 +20,13 @@ public interface ISubjectService
     /// <param name="request"></param>
     /// <returns></returns>
     Task<BaseResponse<List<GetSubjectDto>>> GetSubjectByPaginationAsync(BasePagination request);
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="request"></param>
+    /// <returns></returns>
+    Task<BaseResponse<List<ResponseSubjectReportDto>>> GetSubjectReportAsync(GetSubjectReportDto request);
     
     /// <summary>
     /// 

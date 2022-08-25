@@ -4,6 +4,7 @@ using System.Security.Cryptography;
 using System.Text;
 using ElectronicDiary.Dto;
 using ElectronicDiary.Entities.Base;
+using ElectronicDiary.Interfaces.IServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -19,33 +20,37 @@ public class AuthenticateController : ControllerBase
     private readonly UserManager<Entities.DbModels.User> _userManager;
     private readonly RoleManager<Entities.DbModels.Role> _roleManager;
     private readonly IConfiguration _configuration;
+    private readonly IUserService _userService;
 
     public AuthenticateController(
         UserManager<Entities.DbModels.User> userManager,
         RoleManager<Entities.DbModels.Role> roleManager,
-        IConfiguration configuration)
+        IConfiguration configuration,
+        IUserService userService)
     {
         _userManager = userManager;
         _roleManager = roleManager;
         _configuration = configuration;
+        _userService = userService;
     }
 
     [HttpPost]
     [Route("login")]
     public async Task<IActionResult> Login([FromBody] LoginDto model)
     {
-        var user = await _userManager.FindByNameAsync(model.Login);
+        var user = await _userService.GetByLoginAsync(model.Login, model.Password);
 
-        if (!(user != null && await _userManager.CheckPasswordAsync(user, model.Password)))
+        if (user.IsError)
         {
-            return BadRequest();
+            return BadRequest(user.Description);
         }
 
-        var userRoles = await _userManager.GetRolesAsync(user);
+        var userRoles = await _userManager.GetRolesAsync(user.Data);
 
         var authClaims = new List<Claim>
         {
-            new(ClaimTypes.Name, user.UserName),
+            new(ClaimTypes.Name, user.Data.UserName),
+            // new("id", user.Data.Id.ToString()),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
 
@@ -59,10 +64,10 @@ public class AuthenticateController : ControllerBase
 
         _ = int.TryParse(_configuration["JWT:RefreshTokenValidityInDays"], out int refreshTokenValidityInDays);
 
-        user.RefreshToken = refreshToken;
-        user.RefreshTokenExpiryTime = DateTime.Now.AddDays(refreshTokenValidityInDays);
+        user.Data.RefreshToken = refreshToken;
+        user.Data.RefreshTokenExpiryTime = DateTime.Now.AddDays(refreshTokenValidityInDays);
 
-        await _userManager.UpdateAsync(user);
+        await _userManager.UpdateAsync(user.Data);
 
         return Ok(new
         {
@@ -76,15 +81,11 @@ public class AuthenticateController : ControllerBase
     [Route("refresh-token")]
     public async Task<IActionResult> RefreshToken(BaseAuth tokenModel)
     {
-        if (tokenModel is null)
-        {
-            return BadRequest("Invalid client request");
-        }
-
         string? accessToken = tokenModel.AccessToken;
         string? refreshToken = tokenModel.RefreshToken;
 
         var principal = GetPrincipalFromExpiredToken(accessToken);
+        
         if (principal == null)
         {
             return BadRequest("Invalid access token or refresh token");

@@ -19,11 +19,16 @@ public static class ServiceProviderExtensions
         
         services.AddTransient<IRoleService, RoleService>();
         services.AddTransient<IUserService, UserService>();
-        services.AddTransient<ISchoolClassService, SchoolClassService>();
+        services.AddTransient<IUserRoleService, UserRoleService>();
+        services.AddTransient<IUserInfoService, UserInfoService>();
+        services.AddTransient<IUserClassService, UserClassService>();
+
+        services.AddTransient<ICabinetService, CabinetService>();
         services.AddTransient<ISubjectService, SubjectService>();
-        services.AddTransient<ITimetableService, TimetableService>();
-        services.AddTransient<IPerformanceRatingService, PerformanceRatingService>();
         services.AddTransient<IHomeworkService, HomeworkService>();
+        services.AddTransient<ITimetableService, TimetableService>();
+        services.AddTransient<ISchoolClassService, SchoolClassService>();
+        services.AddTransient<IPerformanceRatingService, PerformanceRatingService>();
     }
     
     /// <summary>
@@ -32,10 +37,17 @@ public static class ServiceProviderExtensions
     /// <param name="services">Коллекция сервисов.</param>
     public static void AddCustomRepository(this IServiceCollection services)
     {
-        services.AddTransient<ISchoolClassRepository, SchoolClassRepository>();
+        services.AddTransient<IRoleRepository, RoleRepository>();
+        services.AddTransient<IUserRepository, UserRepository>();
+        services.AddTransient<IUserRoleRepository, UserRoleRepository>();
+        services.AddTransient<IUserInfoRepository, UserInfoRepository>();
+        services.AddTransient<IUserClassRepository, UserClassRepository>();
+
+        services.AddTransient<ICabinetRepository, CabinetRepository>();
         services.AddTransient<ISubjectRepository, SubjectRepository>();
-        services.AddTransient<ITimetableRepository, TimetableRepository>();
-        services.AddTransient<IPerformanceRatingRepository, PerformanceRatingRepository>();
         services.AddTransient<IHomeworkRepository, HomeworkRepository>();
+        services.AddTransient<ITimetableRepository, TimetableRepository>();
+        services.AddTransient<ISchoolClassRepository, SchoolClassRepository>();
+        services.AddTransient<IPerformanceRatingRepository, PerformanceRatingRepository>();
     }
 }

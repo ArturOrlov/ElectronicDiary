@@ -23,6 +23,13 @@ public interface ITimetableService
     /// <summary>
     /// 
     /// </summary>
+    /// <param name="date"></param>
+    /// <returns></returns>
+    Task<BaseResponse<List<GetTimetableDto>>> GetTimetableByTimeAsync(DateTime date);
+    
+    /// <summary>
+    /// 
+    /// </summary>
     /// <param name="request"></param>
     /// <returns></returns>
     Task<BaseResponse<GetTimetableDto>> CreateTimetableAsync(CreateTimetableDto request);

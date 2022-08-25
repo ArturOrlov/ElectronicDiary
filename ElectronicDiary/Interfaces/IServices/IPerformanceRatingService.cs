@@ -1,4 +1,5 @@
 ﻿using ElectronicDiary.Dto.PerformanceRating;
+using ElectronicDiary.Dto.Report;
 using ElectronicDiary.Entities;
 using ElectronicDiary.Entities.Base;
 
@@ -19,6 +20,13 @@ public interface IPerformanceRatingService
     /// <param name="request"></param>
     /// <returns></returns>
     Task<BaseResponse<List<GetPerformanceRatingDto>>> GetPerformanceRatingByPaginationAsync(BasePagination request);
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="request"></param>
+    /// <returns></returns>
+    Task<BaseResponse<List<ResponsePerformanceRatingReportDto>>> GetPerformanceRatingReportAsync(GetPerformanceRatingReportDto request);
     
     /// <summary>
     /// 

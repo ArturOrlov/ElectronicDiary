@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using ElectronicDiary.Dto.Report;
 using ElectronicDiary.Dto.Subject;
 using ElectronicDiary.Entities;
 using ElectronicDiary.Entities.Base;
@@ -11,12 +12,21 @@ namespace ElectronicDiary.Services;
 public class SubjectService : ISubjectService
 {
     private readonly ISubjectRepository _subjectRepository;
+    private readonly ISchoolClassRepository _schoolClassRepository;
+    private readonly IPerformanceRatingRepository _performanceRatingRepository;
+    private readonly IUserClassRepository _userClassRepository;
     private readonly IMapper _mapper;
 
-    public SubjectService(ISubjectRepository subjectRepository,
+    public SubjectService(ISubjectRepository subjectRepository, 
+        ISchoolClassRepository schoolClassRepository,
+        IPerformanceRatingRepository performanceRatingRepository,
+        IUserClassRepository userClassRepository,
         IMapper mapper)
     {
         _subjectRepository = subjectRepository;
+        _schoolClassRepository = schoolClassRepository;
+        _performanceRatingRepository = performanceRatingRepository;
+        _userClassRepository = userClassRepository;
         _mapper = mapper;
     }
 
@@ -53,6 +63,71 @@ public class SubjectService : ISubjectService
         var mapSubject = _mapper.Map<List<GetSubjectDto>>(subject);
 
         response.Data = mapSubject;
+        return response;
+    }
+
+    public async Task<BaseResponse<List<ResponseSubjectReportDto>>> GetSubjectReportAsync(GetSubjectReportDto request)
+    {
+        var response = new BaseResponse<List<ResponseSubjectReportDto>>();
+
+        var subject = await _subjectRepository.GetByIdAsync(request.SubjectId);
+
+        if (subject == null)
+        {
+            response.IsError = true;
+            response.Description = $"Предмет с id - {request.SubjectId} не найден";
+            return response;
+        }
+        
+        // Получаем классы
+        var schoolClasses = await _schoolClassRepository.GetRangeAsync();
+        
+        if (!schoolClasses.Any())
+        {
+            response.IsError = true;
+            response.Description = "Классы не найдены";
+            return response;
+        }
+        
+        // Получаем учеников
+        var schoolClassesIds = schoolClasses.Select(sc => sc.Id);
+        var userClasses = _userClassRepository.Get(us => schoolClassesIds.Contains(us.SchoolClassId));
+        
+        // Получаем оценки
+        var userIds = userClasses.Select(u => u.UserId);
+        var performanceRatings = _performanceRatingRepository.Get(pr => userIds.Contains(pr.StudentId));
+        
+        if (!performanceRatings.Any())
+        {
+            response.IsError = true;
+            response.Description = $"Оценки не найдены";
+            return response;
+        }
+        
+        var report = new List<ResponseSubjectReportDto>();
+
+        foreach (var schoolClass in schoolClasses)
+        {
+            var pr = performanceRatings.Where(pr => pr.SchoolClassId == schoolClass.Id).ToList();
+
+            var count = pr.Count;
+            var total = 0f;
+
+            foreach (var rating in pr)
+            {
+                total += rating.Valuation;
+            }
+            
+            report.Add(new ResponseSubjectReportDto()
+            {
+                ClassId = schoolClass.Id,
+                SubjectId = request.SubjectId,
+                Gpa = total / count
+            });
+        }
+
+        report.Sort((x, y) => x.Gpa.CompareTo(y.Gpa));
+        response.Data = report;
         return response;
     }
 

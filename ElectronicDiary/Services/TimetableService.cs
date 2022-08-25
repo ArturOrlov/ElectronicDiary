@@ -62,6 +62,23 @@ public class TimetableService : ITimetableService
         return response;
     }
 
+    public async Task<BaseResponse<List<GetTimetableDto>>> GetTimetableByTimeAsync(DateTime date)
+    {
+        var response = new BaseResponse<List<GetTimetableDto>>();
+
+        var timetables = _timetableRepository.Get(t => t.StartedAt.Date == date.Date);
+
+        if (timetables == null || !timetables.Any())
+        {
+            return response;
+        }
+
+        var mapSubject = _mapper.Map<List<GetTimetableDto>>(timetables);
+
+        response.Data = mapSubject;
+        return response;
+    }
+
     public async Task<BaseResponse<GetTimetableDto>> CreateTimetableAsync(CreateTimetableDto request)
     {
         var response = new BaseResponse<GetTimetableDto>();

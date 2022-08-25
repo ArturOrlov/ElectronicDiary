@@ -3,7 +3,7 @@
 namespace ElectronicDiary.Entities.DbModels;
 
 /// <summary>
-/// Связь Пользователь - Роль
+/// Связь пользователь-роль
 /// </summary>
 public class UserRole : IdentityUserRole<int>
 {
