@@ -2,7 +2,7 @@
 
 public class ResponseSubjectReportDto
 {
-    public int ClassId { get; set; }
+    public int SchoolClassId { get; set; }
     public int SubjectId { get; set; }
     
     /// <summary>

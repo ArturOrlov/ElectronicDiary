@@ -7,8 +7,8 @@ namespace ElectronicDiary.Entities.DbModels;
 /// </summary>
 public class User : IdentityUser<int>
 {
-    public DateTime CreatedAt { get; set; }
-    public DateTime UpdatedAt { get; set; }
+    public DateTimeOffset CreatedAt { get; set; }
+    public DateTimeOffset UpdatedAt { get; set; }
     public string? RefreshToken { get; set; }
-    public DateTime RefreshTokenExpiryTime { get; set; }
+    public DateTimeOffset RefreshTokenExpiryTime { get; set; }
 }

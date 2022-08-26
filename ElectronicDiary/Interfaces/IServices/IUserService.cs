@@ -27,7 +27,7 @@ public interface IUserService
     /// </summary>
     /// <param name="request"></param>
     /// <returns></returns>
-    Task<BaseResponse<List<GetUserDto>>> GetByPaginationAsync(BasePagination request);
+    Task<BaseResponse<List<GetUserDto>>> GetByPaginationAsync(UserFilter request);
     
     /// <summary>
     /// 

@@ -67,6 +67,7 @@ public class AuthenticateController : ControllerBase
         user.Data.RefreshToken = refreshToken;
         user.Data.RefreshTokenExpiryTime = DateTime.Now.AddDays(refreshTokenValidityInDays);
 
+        user.Data.UpdatedAt = DateTimeOffset.Now;
         await _userManager.UpdateAsync(user.Data);
 
         return Ok(new
@@ -104,6 +105,7 @@ public class AuthenticateController : ControllerBase
         var newRefreshToken = GenerateRefreshToken();
 
         user.RefreshToken = newRefreshToken;
+        user.UpdatedAt = DateTimeOffset.Now;
         await _userManager.UpdateAsync(user);
 
         return new ObjectResult(new
@@ -126,6 +128,7 @@ public class AuthenticateController : ControllerBase
         }
 
         user.RefreshToken = null;
+        user.UpdatedAt = DateTimeOffset.Now;
         await _userManager.UpdateAsync(user);
 
         return Ok();
@@ -141,6 +144,7 @@ public class AuthenticateController : ControllerBase
         foreach (var user in users)
         {
             user.RefreshToken = null;
+            user.UpdatedAt = DateTimeOffset.Now;
             await _userManager.UpdateAsync(user);
         }
 

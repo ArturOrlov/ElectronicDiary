@@ -2,7 +2,7 @@
 
 public class UpdateUserClassDto
 {
-    public int UserId { get; set; }
-    public int SchoolClassId { get; set; }
-    public bool IsClassroomTeacher { get; set; }
+    public int? UserId { get; set; }
+    public int? SchoolClassId { get; set; }
+    public bool? IsClassroomTeacher { get; set; }
 }

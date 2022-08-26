@@ -120,7 +120,7 @@ public class SubjectService : ISubjectService
             
             report.Add(new ResponseSubjectReportDto()
             {
-                ClassId = schoolClass.Id,
+                SchoolClassId = schoolClass.Id,
                 SubjectId = request.SubjectId,
                 Gpa = total / count
             });
@@ -174,7 +174,7 @@ public class SubjectService : ISubjectService
             return response;
         }
 
-        if (string.IsNullOrEmpty(request.Name))
+        if (!string.IsNullOrEmpty(request.Name))
         {
             var subjects = _subjectRepository.Get(s => s.Name == request.Name).FirstOrDefault();
 
@@ -188,6 +188,7 @@ public class SubjectService : ISubjectService
             subject.Name = request.Name;
         }
 
+        subject.UpdatedAt = DateTimeOffset.Now;
         await _subjectRepository.UpdateAsync(subject);
         
         var mapSubject = _mapper.Map<GetSubjectDto>(subject);

@@ -103,10 +103,11 @@ public class HomeworkService : IHomeworkService
             return response;
         }
 
-        if (request.ForDateAt.Date <= DateTime.Now.Date)
+        if (request.ForDateAt.Date <= DateTimeOffset.Now.Date)
         {
             response.IsError = true;
-            response.Description = $"Дата сдачи домашнего задания - {request.ForDateAt.Date} установлено неверно";
+            response.Description = $"Дата сдачи домашнего задания - {request.ForDateAt.Date} установлено неверно. " +
+                                   $"Время сдачи не может быть меньше или равно текущему времени";
             return response;
         }
 
@@ -142,14 +143,14 @@ public class HomeworkService : IHomeworkService
             return response;
         }
 
-        if (string.IsNullOrEmpty(request.HomeworkDescription))
+        if (!string.IsNullOrEmpty(request.HomeworkDescription))
         {
             response.IsError = true;
             response.Description = "Описание домашнего задание отсутствует";
             return response;
         }
 
-        if (request.SubjectId.HasValue)
+        if (request.SubjectId.HasValue  && request.SubjectId != 0)
         {
             var subject = await _subjectRepository.GetByIdAsync((int)request.SubjectId);
 
@@ -163,7 +164,7 @@ public class HomeworkService : IHomeworkService
             homework.SubjectId = (int)request.SubjectId;
         }
 
-        if (request.SchoolClassId.HasValue)
+        if (request.SchoolClassId.HasValue  && request.SchoolClassId != 0)
         {
             var schoolClass = await _schoolClassRepository.GetByIdAsync((int)request.SchoolClassId);
 
@@ -179,14 +180,15 @@ public class HomeworkService : IHomeworkService
 
         if (request.ForDateAt != null)
         {
-            if (request.ForDateAt.Value.Date <= DateTime.Now.Date)
+            if (request.ForDateAt.Value.Date <= DateTimeOffset.Now.Date)
             {
                 response.IsError = true;
-                response.Description = $"Дата сдачи домашнего задания - {request.ForDateAt.Value.Date} установлено неверно";
+                response.Description = $"Дата сдачи домашнего задания - {request.ForDateAt.Value.Date} установлено неверно. " +
+                                       $"Время сдачи не может быть меньше или равно текущему времени";
                 return response;
             }
 
-            homework.ForDateAt = (DateTime)request.ForDateAt;
+            homework.ForDateAt = (DateTimeOffset)request.ForDateAt;
         }
         
         var result = CheckHomeworkOnRepeat(homework.SchoolClassId, homework.SubjectId, homework.ForDateAt);
@@ -198,6 +200,7 @@ public class HomeworkService : IHomeworkService
             return response;
         }
 
+        homework.UpdatedAt = DateTimeOffset.Now;
         await _homeworkRepository.UpdateAsync(homework);
 
         var mapHomework = _mapper.Map<GetHomeworkDto>(homework);
@@ -229,15 +232,16 @@ public class HomeworkService : IHomeworkService
         return response;
     }
 
-    private (string, bool) CheckHomeworkOnRepeat(int schoolClassId, int subjectId,  DateTime forDateAt)
+    private (string, bool) CheckHomeworkOnRepeat(int schoolClassId, int subjectId,  DateTimeOffset forDateAt)
     {
+        // todo баг. если сделать запрос, то почему то возвращается запись с параметрами переданными в метод когда в бд такой записи нет
         var homeworks = _homeworkRepository.Get(h => h.SubjectId == subjectId
                                                 && h.SchoolClassId == schoolClassId
                                                 && h.ForDateAt.Date == forDateAt.Date).ToList();
 
         if (homeworks.Any())
         {
-            return ($"Для указанного класса {schoolClassId} по предмету {subjectId} в указанное время {forDateAt.Date} уже есть ДЗ", true);
+            return ($"Для указанного класса с id - {schoolClassId} по предмету с id - {subjectId} в указанное время - {forDateAt.Date} уже есть ДЗ", true);
         }
         
         return ("Совпадений не обнаружено", false);

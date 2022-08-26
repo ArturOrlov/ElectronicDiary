@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using ElectronicDiary.Dto.Cabinet;
 using ElectronicDiary.Dto.Homework;
 using ElectronicDiary.Dto.PerformanceRating;
 using ElectronicDiary.Dto.Role;
@@ -36,6 +37,10 @@ public class AutoMappingProfile : Profile
         // Subject
         CreateMap<Subject, GetSubjectDto>().ReverseMap();
         CreateMap<Subject, CreateSubjectDto>().ReverseMap();
+        
+        // Cabinet
+        CreateMap<Cabinet, GetCabinetDto>().ReverseMap();
+        CreateMap<Cabinet, CreateCabinetDto>().ReverseMap();
 
         // User
         CreateMap<User, GetUserDto>().ReverseMap();
@@ -57,86 +62,4 @@ public class AutoMappingProfile : Profile
         CreateMap<Role, GetRoleDto>().ReverseMap();
         CreateMap<Role, CreateRoleDto>().ReverseMap();
     }
-
-    // public AutoMappingProfile()
-    // {
-    //     // Timetable
-    //     CreateMap<Timetable, GetTimetableDto>();
-    //     CreateMap<GetTimetableDto, Timetable>();
-    //     CreateMap<Timetable, CreateTimetableDto>();
-    //     CreateMap<CreateTimetableDto, Timetable>();
-    //
-    //     // Homework
-    //     CreateMap<Homework, GetHomeworkDto>();
-    //     CreateMap<GetHomeworkDto, Homework>();
-    //     CreateMap<Homework, CreateHomeworkDto>();
-    //     CreateMap<CreateHomeworkDto, Homework>();
-    //
-    //     // PerformanceRating
-    //     CreateMap<PerformanceRating, GetPerformanceRatingDto>();
-    //     CreateMap<GetPerformanceRatingDto, PerformanceRating>();
-    //     CreateMap<PerformanceRating, CreatePerformanceRatingDto>();
-    //     CreateMap<CreatePerformanceRatingDto, PerformanceRating>();
-    //
-    //     // SchoolClass
-    //     CreateMap<SchoolClass, GetSchoolClassDto>();
-    //     CreateMap<GetSchoolClassDto, SchoolClass>();
-    //     CreateMap<SchoolClass, CreateSchoolClassDto>();
-    //     CreateMap<CreateSchoolClassDto, SchoolClass>();
-    //
-    //     // Subject
-    //     CreateMap<Subject, GetSubjectDto>();
-    //     CreateMap<GetSubjectDto, Subject>();
-    //     CreateMap<Subject, CreateSubjectDto>();
-    //     CreateMap<CreateSubjectDto, Subject>();
-    //
-    //     // User
-    //     CreateMap<User, GetUserDto>();
-    //     CreateMap<GetUserDto, User>();
-    //     CreateMap<User, CreateUserDto>();
-    //     CreateMap<CreateUserDto, User>();
-    //
-    //     // UserInfo
-    //     CreateMap<UserInfo, GetUserInfoDto>();
-    //     CreateMap<GetUserInfoDto, UserInfo>();
-    //     CreateMap<UserInfo, CreateUserInfoDto>();
-    //     CreateMap<CreateUserInfoDto, UserInfo>();
-    //
-    //     // UserClass
-    //     CreateMap<UserClass, GetUserClassDto>();
-    //     CreateMap<GetUserClassDto, UserClass>();
-    //     CreateMap<UserClass, CreateUserClassDto>();
-    //     CreateMap<CreateUserClassDto, UserClass>();
-    //
-    //     // UserRole
-    //     CreateMap<UserRole, GetUserRoleDto>();
-    //     CreateMap<GetUserRoleDto, UserRole>();
-    //     CreateMap<UserRole, CreateUserRoleDto>();
-    //     CreateMap<CreateUserRoleDto, UserRole>();
-    //
-    //     // Role
-    //     CreateMap<Role, GetRoleDto>();
-    //     CreateMap<GetRoleDto, Role>();
-    //     CreateMap<Role, CreateRoleDto>();
-    //     CreateMap<CreateRoleDto, Role>();
-    //
-    //     
-    //     
-    //     
-    //     
-    //     // Report !!!
-    //     CreateMap<Role, GetPerformanceRatingReportDto>();
-    //     CreateMap<GetPerformanceRatingReportDto, Role>();
-    //     CreateMap<Role, GetSchoolClassReportDto>();
-    //     CreateMap<GetSchoolClassReportDto, Role>();
-    //     CreateMap<Role, GetSubjectReportDto>();
-    //     CreateMap<GetSubjectReportDto, Role>();
-    //     
-    //     CreateMap<Role, ResponsePerformanceRatingReportDto>();
-    //     CreateMap<ResponsePerformanceRatingReportDto, Role>().ReverseMap();
-    //     CreateMap<Role, GetSchoolClassReportDto>();
-    //     CreateMap<GetSchoolClassReportDto, Role>();
-    //     CreateMap<Role, GetSubjectReportDto>();
-    //     CreateMap<GetSubjectReportDto, Role>();
-    // }
 }

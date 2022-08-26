@@ -147,7 +147,7 @@ public class SchoolClassService : ISchoolClassService
                 request.Symbol = schoolClass.Symbol;
             }
 
-            var result = CheckSchoolClassYear(request.Symbol, (DateTime)request.ClassCreateTime);
+            var result = CheckSchoolClassYear(request.Symbol, (DateTimeOffset)request.ClassCreateTime);
 
             if (result.Item2 == true)
             {
@@ -156,9 +156,10 @@ public class SchoolClassService : ISchoolClassService
                 return response;
             }
 
-            schoolClass.CreatedAt = (DateTime)request.ClassCreateTime;
+            schoolClass.CreatedAt = (DateTimeOffset)request.ClassCreateTime;
         }
 
+        schoolClass.UpdatedAt = DateTimeOffset.Now;
         await _schoolClassRepository.UpdateAsync(schoolClass);
 
         var mapSchoolClass = _mapper.Map<GetSchoolClassDto>(schoolClass);
@@ -186,7 +187,7 @@ public class SchoolClassService : ISchoolClassService
         return response;
     }
 
-    private (string, bool) CheckSchoolClassYear(string symbol, DateTime classCreateTime)
+    private (string, bool) CheckSchoolClassYear(string symbol, DateTimeOffset classCreateTime)
     {
         var schoolClasses = _schoolClassRepository.Get(s => s.Symbol == symbol).ToList();
 
@@ -194,7 +195,7 @@ public class SchoolClassService : ISchoolClassService
         {
             int i = 0;
 
-            var newTime = classCreateTime - DateTime.Now;
+            var newTime = classCreateTime - DateTimeOffset.Now;
             var newTimeDays = newTime.Days;
 
             if (newTimeDays < 0)
@@ -204,7 +205,7 @@ public class SchoolClassService : ISchoolClassService
 
             foreach (var oldClass in schoolClasses)
             {
-                var oldTime = oldClass.ClassCreateTime - DateTime.Now;
+                var oldTime = oldClass.ClassCreateTime - DateTimeOffset.Now;
                 var oldTimeDays = oldTime.Days;
 
                 if (oldTimeDays < 0)

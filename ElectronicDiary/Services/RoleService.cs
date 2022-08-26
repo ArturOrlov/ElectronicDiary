@@ -3,6 +3,7 @@ using ElectronicDiary.Dto.Role;
 using ElectronicDiary.Entities;
 using ElectronicDiary.Entities.Base;
 using ElectronicDiary.Entities.DbModels;
+using ElectronicDiary.Interfaces.IRepositories;
 using ElectronicDiary.Interfaces.IServices;
 using Microsoft.AspNetCore.Identity;
 
@@ -11,12 +12,15 @@ namespace ElectronicDiary.Services;
 public class RoleService : IRoleService
 {
     private readonly RoleManager<Role> _roleManager;
+    private readonly IRoleRepository _roleRepository;
     private readonly IMapper _mapper;
 
-    public RoleService(RoleManager<Role> roleManager,
+    public RoleService(RoleManager<Role> roleManager, 
+        IRoleRepository roleRepository,
         IMapper mapper)
     {
         _roleManager = roleManager;
+        _roleRepository = roleRepository;
         _mapper = mapper;
     }
 
@@ -115,6 +119,7 @@ public class RoleService : IRoleService
             role.Name = request.Name;
         }
 
+        role.UpdatedAt = DateTimeOffset.Now;
         var result = await _roleManager.UpdateAsync(role);
 
         if (!result.Succeeded)

@@ -3,6 +3,7 @@ using System;
 using ElectronicDiary.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ElectronicDiary.Migrations
 {
     [DbContext(typeof(ElectronicDiaryDbContext))]
-    partial class ElectronicDiaryDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220826062836_AddUserClassTable")]
+    partial class AddUserClassTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

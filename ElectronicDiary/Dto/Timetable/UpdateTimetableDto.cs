@@ -1,8 +1,8 @@
 ﻿namespace ElectronicDiary.Dto.Timetable;
 
-public class UpdateTimetableDto
+public class UpDateTimeOffsettableDto
 {
-    public DateTime? StartedAt { get; set; }
+    public DateTimeOffset? StartedAt { get; set; }
     public int? SchoolClassId { get; set; }
     public int? SubjectId { get; set; }
 }

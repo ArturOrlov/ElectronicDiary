@@ -1,6 +1,7 @@
 ﻿using ElectronicDiary.Dto.Timetable;
 using ElectronicDiary.Entities;
 using ElectronicDiary.Entities.Base;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ElectronicDiary.Interfaces.IServices;
 
@@ -21,11 +22,18 @@ public interface ITimetableService
     Task<BaseResponse<List<GetTimetableDto>>> GetTimetableByPaginationAsync(BasePagination request);
     
     /// <summary>
-    /// 
+    /// Получить расписание по дате
     /// </summary>
     /// <param name="date"></param>
     /// <returns></returns>
-    Task<BaseResponse<List<GetTimetableDto>>> GetTimetableByTimeAsync(DateTime date);
+    Task<BaseResponse<List<GetTimetableDto>>> GetTimetableByTimeAsync(DateTimeOffset date);
+
+    /// <summary>
+    /// Получить расписание по дате в виде excel файла
+    /// </summary>
+    /// <param name="date"></param>
+    /// <returns></returns>
+    Task<BaseResponse<FileContentResult>> GetTimetableByTimeExcelAsync(DateTimeOffset date);
     
     /// <summary>
     /// 
@@ -40,7 +48,7 @@ public interface ITimetableService
     /// <param name="timetableId"></param>
     /// <param name="request"></param>
     /// <returns></returns>
-    Task<BaseResponse<GetTimetableDto>> UpdateTimetableByIdAsync(int timetableId, UpdateTimetableDto request);
+    Task<BaseResponse<GetTimetableDto>> UpDateTimeOffsettableByIdAsync(int timetableId, UpDateTimeOffsettableDto request);
     
     /// <summary>
     /// 

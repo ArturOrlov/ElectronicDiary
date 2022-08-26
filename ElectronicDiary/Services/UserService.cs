@@ -1,10 +1,13 @@
 ﻿using AutoMapper;
+using ElectronicDiary.Context;
 using ElectronicDiary.Dto.User;
-using ElectronicDiary.Entities;
+using ElectronicDiary.Dto.UserInfo;
 using ElectronicDiary.Entities.Base;
 using ElectronicDiary.Entities.DbModels;
+using ElectronicDiary.Interfaces.IRepositories;
 using ElectronicDiary.Interfaces.IServices;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace ElectronicDiary.Services;
 
@@ -12,21 +15,27 @@ public class UserService : IUserService
 {
     private readonly UserManager<User> _userManager;
     private readonly RoleManager<Role> _roleManager;
+    private readonly ElectronicDiaryDbContext _context;
+    private readonly IUserInfoRepository _userInfoRepository;
     private readonly IMapper _mapper;
 
     public UserService(UserManager<User> userManager,
-        RoleManager<Role> roleManager,
+        RoleManager<Role> roleManager, 
+        ElectronicDiaryDbContext context, 
+        IUserInfoRepository userInfoRepository,
         IMapper mapper)
     {
         _userManager = userManager;
-        _mapper = mapper;
         _roleManager = roleManager;
+        _context = context;
+        _userInfoRepository = userInfoRepository;
+        _mapper = mapper;
     }
 
     public async Task<BaseResponse<User>> GetByLoginAsync(string login, string password)
     {
         var response = new BaseResponse<User>();
-        
+
         var user = await _userManager.FindByNameAsync(login);
 
         if (user == null)
@@ -35,7 +44,7 @@ public class UserService : IUserService
             response.Description = "Невыерный логин или пароль";
             return response;
         }
-        
+
         var isPasswordCorrect = await _userManager.CheckPasswordAsync(user, password);
 
         if (isPasswordCorrect == false)
@@ -44,7 +53,7 @@ public class UserService : IUserService
             response.Description = "Невыерный логин или пароль";
             return response;
         }
-        
+
         response.Data = user;
         return response;
     }
@@ -68,22 +77,26 @@ public class UserService : IUserService
         return response;
     }
 
-    public async Task<BaseResponse<List<GetUserDto>>> GetByPaginationAsync(BasePagination request)
+    public async Task<BaseResponse<List<GetUserDto>>> GetByPaginationAsync(UserFilter request)
     {
         var response = new BaseResponse<List<GetUserDto>>();
 
-        var users = _userManager.Users.ToList();
+        var users = await (from u in _userManager.Users
+            join ur in _context.UserRole on u.Id equals ur.UserId
+            join ui in _context.UserInfo on u.Id equals ui.UserId into uid
+            from ui in uid.DefaultIfEmpty()
+            where request.RoleId == 0 || ur.RoleId == request.RoleId
+            select new GetUserDto
+            {
+                Id = u.Id,
+                RoleId = ur.RoleId,
+                Email = u.Email,
+                UserName = u.UserName,
+                PhoneNumber = u.PhoneNumber,
+                UserInfo = _mapper.Map<GetUserInfoDto>(ui)
+            }).Skip(request.Skip).Take(request.Take).ToListAsync();
 
-        if (!users.Any())
-        {
-            return response;
-        }
-
-        users = users.Skip(request.Skip).Take(request.Take).ToList();
-
-        var mapHomework = _mapper.Map<List<GetUserDto>>(users);
-
-        response.Data = mapHomework;
+        response.Data = users;
         return response;
     }
 
@@ -134,6 +147,11 @@ public class UserService : IUserService
             await _userManager.AddToRoleAsync(user, role.Name);
         }
 
+        // await _userInfoRepository.CreateAsync(new UserInfo()
+        // {
+        //     UserId = user.Id
+        // });
+
         var mapUser = _mapper.Map<GetUserDto>(user);
 
         response.Data = mapUser;
@@ -165,6 +183,7 @@ public class UserService : IUserService
             user.PhoneNumber = request.PhoneNumber;
         }
 
+        user.UpdatedAt = DateTimeOffset.Now;
         var result = await _userManager.UpdateAsync(user);
 
         if (!result.Succeeded)

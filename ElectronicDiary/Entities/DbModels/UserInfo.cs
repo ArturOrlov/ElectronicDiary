@@ -14,7 +14,7 @@ public class UserInfo : BaseModel
     public string LastName { get; set; }
     public string Patronymic { get; set; }
     
-    public DateTime? Birthday { get; set; }
+    public DateTimeOffset? Birthday { get; set; }
     
     public string PassportNumber { get; set; }
     public string PassportSeries { get; set; }

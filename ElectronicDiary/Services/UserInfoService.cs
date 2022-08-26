@@ -89,6 +89,7 @@ public class UserInfoService : IUserInfoService
             return response;
         }
 
+        userInfo.UpdatedAt = DateTimeOffset.Now;
         await _userInfoRepository.UpdateAsync(userInfo);
 
         var mapUserInfo = _mapper.Map<GetUserInfoDto>(userInfo);

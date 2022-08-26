@@ -51,15 +51,29 @@ public class TimetableController : ControllerBaseExtension
     [HttpGet]
     [Route("date")]
     [SwaggerOperation(
-        Summary = "Получить расписание по его id",
-        Description = "Получить расписание по его id",
+        Summary = "Получить расписание на указанную дату",
+        Description = "Получить расписание на указанную дату",
         OperationId = "Timetable.Get.ByDate",
         Tags = new[] { "Timetable" })]
-    public async Task<IActionResult> Get([FromRoute] DateTime date)
+    public async Task<IActionResult> Get([FromQuery] DateTimeOffset date)
     {
         var response = await _timetableService.GetTimetableByTimeAsync(date);
 
         return Response(response);
+    }
+    
+    [HttpPost]
+    [Route("date/excel/download")]
+    [SwaggerOperation(
+        Summary = "Получить расписание на указанную дату в виде файла Excel",
+        Description = "Получить расписание на указанную дату в виде файла Excel",
+        OperationId = "Timetable.Get.Excel.ByDate",
+        Tags = new[] { "Timetable" })]
+    public async Task<IActionResult> GetExcel([FromQuery] DateTimeOffset date)
+    {
+        var response = await _timetableService.GetTimetableByTimeExcelAsync(date);
+
+        return response.Data;
     }
 
     [HttpPost]
@@ -83,9 +97,9 @@ public class TimetableController : ControllerBaseExtension
         Description = "Обновить расписание по его id",
         OperationId = "Timetable.Update.ById",
         Tags = new[] { "Timetable" })]
-    public async Task<IActionResult> Update([FromRoute] int timetableId, [FromBody] UpdateTimetableDto request)
+    public async Task<IActionResult> Update([FromRoute] int timetableId, [FromBody] UpDateTimeOffsettableDto request)
     {
-        var response = await _timetableService.UpdateTimetableByIdAsync(timetableId, request);
+        var response = await _timetableService.UpDateTimeOffsettableByIdAsync(timetableId, request);
 
         return Response(response);
     }

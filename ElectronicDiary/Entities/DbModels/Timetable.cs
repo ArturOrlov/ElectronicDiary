@@ -7,7 +7,7 @@ namespace ElectronicDiary.Entities.DbModels;
 /// </summary>
 public class Timetable : BaseModel
 {
-    public DateTime StartedAt { get; set; }
+    public DateTimeOffset StartedAt { get; set; }
     
     public int SubjectId { get; set; }
     public Subject Subject { get; set; }

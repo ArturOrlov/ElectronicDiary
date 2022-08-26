@@ -62,7 +62,7 @@ public class Bootstrap
             EmailConfirmed = true,
             PhoneNumberConfirmed = true,
             SecurityStamp = Guid.NewGuid().ToString("D"),
-            UpdatedAt = DateTime.Now
+            UpdatedAt = DateTimeOffset.Now
         };
 
         var result = await _userManager.CreateAsync(user, AdminDefaultSettings.Password);
@@ -138,14 +138,15 @@ public class Bootstrap
         {
             Name = role,
             NormalizedName = role.ToUpper(),
-            ConcurrencyStamp = Convert.ToString(DateTime.Now.Ticks),
-            CreatedAt = DateTime.Now,
-            UpdatedAt = DateTime.Now
+            ConcurrencyStamp = Convert.ToString(DateTimeOffset.Now.Ticks),
+            CreatedAt = DateTimeOffset.Now,
+            UpdatedAt = DateTimeOffset.Now
         };
     }
 
-    private DateTime ClassDateSeedHelper(int year)
+    private DateTimeOffset ClassDateSeedHelper(int year)
     {
-        return new DateTime(year, DateTime.Now.Month, DateTime.Now.Day);
+        return new DateTimeOffset(year, DateTimeOffset.Now.Month, DateTimeOffset.Now.Day, 0, 0, 0, DateTimeOffset.Now.Offset);
+        // return new DateTimeOffset(year, DateTimeOffset.Now.Month, DateTimeOffset.Now.Day);
     }
 }

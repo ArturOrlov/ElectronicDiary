@@ -80,7 +80,7 @@ public class PerformanceRatingService : IPerformanceRatingService
             return response;
         }
         
-        // Проверка на роль
+        // todo Проверка на роль
         
         // -------------------
         
@@ -127,7 +127,7 @@ public class PerformanceRatingService : IPerformanceRatingService
 
         var teacher = await _userService.GetByIdAsync(request.TeacherId);
 
-        if (teacher == null)
+        if (teacher.Data == null)
         {
             response.IsError = true;
             response.Description = $"Учитель с id - {request.TeacherId} не найден";
@@ -136,7 +136,7 @@ public class PerformanceRatingService : IPerformanceRatingService
 
         var student = await _userService.GetByIdAsync(request.StudentId);
 
-        if (student == null)
+        if (student.Data == null)
         {
             response.IsError = true;
             response.Description = $"Ученик с id - {request.StudentId} не найден";
@@ -193,11 +193,11 @@ public class PerformanceRatingService : IPerformanceRatingService
             return response;
         }
 
-        if (request.TeacherId.HasValue)
+        if (request.TeacherId.HasValue  && request.TeacherId != 0)
         {
             var teacher = await _userService.GetByIdAsync((int)request.TeacherId);
 
-            if (teacher == null)
+            if (teacher.Data == null)
             {
                 response.IsError = true;
                 response.Description = $"Учитель с id - {request.TeacherId} не найден";
@@ -207,16 +207,18 @@ public class PerformanceRatingService : IPerformanceRatingService
             performanceRating.TeacherId = (int)request.TeacherId;
         }
 
-        if (request.StudentId.HasValue)
+        if (request.StudentId.HasValue && request.StudentId != 0)
         {
             var student = await _userService.GetByIdAsync((int)request.StudentId);
 
-            if (student == null)
+            if (student.Data == null)
             {
                 response.IsError = true;
                 response.Description = $"Ученик с id - {request.StudentId} не найден";
                 return response;
             }
+
+            performanceRating.StudentId = (int)request.StudentId;
             
             var userClass = _userClassRepository.Get(uc => uc.UserId == student.Data.Id).FirstOrDefault();
         
@@ -228,11 +230,9 @@ public class PerformanceRatingService : IPerformanceRatingService
             }
         
             performanceRating.SchoolClassId = userClass.SchoolClassId;
-
-            performanceRating.StudentId = (int)request.StudentId;
         }
 
-        if (request.SubjectId.HasValue)
+        if (request.SubjectId.HasValue && request.SubjectId != 0)
         {
             var subject = await _subjectRepository.GetByIdAsync((int)request.SubjectId);
 
@@ -258,6 +258,7 @@ public class PerformanceRatingService : IPerformanceRatingService
             performanceRating.Valuation = (uint)request.Valuation;
         }
 
+        performanceRating.UpdatedAt = DateTimeOffset.Now;
         await _performanceRatingRepository.UpdateAsync(performanceRating);
 
         var mapPerformanceRating = _mapper.Map<GetPerformanceRatingDto>(performanceRating);

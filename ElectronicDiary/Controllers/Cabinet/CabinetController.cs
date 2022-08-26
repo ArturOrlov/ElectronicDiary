@@ -19,8 +19,8 @@ public class CabinetController : ControllerBaseExtension
     {
         _cabinetService = cabinetService;
     }
-    
-     [HttpGet]
+
+    [HttpGet]
     [Route("{cabinetId:int}")]
     [SwaggerOperation(
         Summary = "Получить кабинет по его id",

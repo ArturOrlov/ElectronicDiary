@@ -37,11 +37,11 @@ public class UserController : ControllerBaseExtension
     [HttpGet]
     [Route("")]
     [SwaggerOperation(
-        Summary = "Получить пользователяы по филтрам",
-        Description = "Получить пользователяы по филтрам",
+        Summary = "Получить пользователей по филтрам",
+        Description = "Получить пользователей по филтрам",
         OperationId = "User.Get.List",
         Tags = new[] { "User" })]
-    public async Task<IActionResult> GetAll([FromQuery] BasePagination request)
+    public async Task<IActionResult> GetAll([FromQuery] UserFilter request)
     {
         var response = await _userService.GetByPaginationAsync(request);
 

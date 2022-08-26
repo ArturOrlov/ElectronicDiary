@@ -2,6 +2,6 @@
 
 public class UpdateSchoolClassDto
 {
-    public DateTime? ClassCreateTime { get; set; }
+    public DateTimeOffset? ClassCreateTime { get; set; }
     public string Symbol { get; set; }
 }

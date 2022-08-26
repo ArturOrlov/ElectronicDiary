@@ -97,7 +97,7 @@ public class CabinetService : ICabinetService
             return response;
         }
 
-        if (string.IsNullOrEmpty(request.Number))
+        if (!string.IsNullOrEmpty(request.Number))
         {
             var checkNumber = _cabinetRepository.Get(s => s.Number == request.Number).FirstOrDefault();
             
@@ -111,7 +111,7 @@ public class CabinetService : ICabinetService
             cabinet.Number = request.Number;
         }
         
-        if (string.IsNullOrEmpty(request.Campus))
+        if (!string.IsNullOrEmpty(request.Campus))
         {
             var checkNumber = _cabinetRepository.Get(s => s.Number == request.Number 
                                                           && s.Campus == request.Campus).FirstOrDefault();
@@ -123,9 +123,10 @@ public class CabinetService : ICabinetService
                 return response;
             }
             
-            cabinet.Number = request.Number;
+            cabinet.Campus = request.Campus;
         }
 
+        cabinet.UpdatedAt = DateTimeOffset.Now;
         await _cabinetRepository.UpdateAsync(cabinet);
         
         var mapSubject = _mapper.Map<GetCabinetDto>(cabinet);
