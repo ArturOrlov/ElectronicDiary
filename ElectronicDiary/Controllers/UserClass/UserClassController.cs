@@ -20,6 +20,7 @@ public class UserClassController : ControllerBaseExtension
         _userClassService = userClassService;
     }
 
+    [Authorize(Roles = Constants.Role.ForAdmins)]
     [HttpGet]
     [Route("{userClassId:int}")]
     [SwaggerOperation(
@@ -34,6 +35,7 @@ public class UserClassController : ControllerBaseExtension
         return Response(response);
     }
 
+    [Authorize(Roles = Constants.Role.ForAdmins)]
     [HttpGet]
     [Route("")]
     [SwaggerOperation(
@@ -48,6 +50,7 @@ public class UserClassController : ControllerBaseExtension
         return Response(response);
     }
 
+    [Authorize(Roles = Constants.Role.ForAdmins)]
     [HttpPost]
     [Route("")]
     [SwaggerOperation(
@@ -62,6 +65,7 @@ public class UserClassController : ControllerBaseExtension
         return Response(response);
     }
 
+    [Authorize(Roles = Constants.Role.ForAdmins)]
     [HttpPut]
     [Route("{userClassId:int}")]
     [SwaggerOperation(
@@ -76,6 +80,7 @@ public class UserClassController : ControllerBaseExtension
         return Response(response);
     }
 
+    [Authorize(Roles = Constants.Role.ForAdmins)]
     [HttpDelete]
     [Route("{userClassId:int}")]
     [SwaggerOperation(

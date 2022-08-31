@@ -13,43 +13,43 @@ public interface ITimetableService
     /// <param name="timetableId"></param>
     /// <returns></returns>
     Task<BaseResponse<GetTimetableDto>> GetTimetableByIdAsync(int timetableId);
-    
+
     /// <summary>
     /// 
     /// </summary>
     /// <param name="request"></param>
     /// <returns></returns>
     Task<BaseResponse<List<GetTimetableDto>>> GetTimetableByPaginationAsync(BasePagination request);
-    
+
     /// <summary>
     /// Получить расписание по дате
     /// </summary>
     /// <param name="date"></param>
     /// <returns></returns>
-    Task<BaseResponse<List<GetTimetableDto>>> GetTimetableByTimeAsync(DateTimeOffset date);
+    Task<BaseResponse<List<GetTimetableDto>>> GetTimetableByDateAsync(DateTimeOffset date);
 
     /// <summary>
     /// Получить расписание по дате в виде excel файла
     /// </summary>
     /// <param name="date"></param>
     /// <returns></returns>
-    Task<BaseResponse<FileContentResult>> GetTimetableByTimeExcelAsync(DateTimeOffset date);
-    
+    Task<BaseResponse<FileContentResult>> GetTimetableByDateExcelAsync(DateTimeOffset date);
+
     /// <summary>
     /// 
     /// </summary>
     /// <param name="request"></param>
     /// <returns></returns>
     Task<BaseResponse<GetTimetableDto>> CreateTimetableAsync(CreateTimetableDto request);
-    
+
     /// <summary>
     /// 
     /// </summary>
     /// <param name="timetableId"></param>
     /// <param name="request"></param>
     /// <returns></returns>
-    Task<BaseResponse<GetTimetableDto>> UpDateTimeOffsettableByIdAsync(int timetableId, UpDateTimeOffsettableDto request);
-    
+    Task<BaseResponse<GetTimetableDto>> UpdateTimetableByIdAsync(int timetableId, UpdateTimetableDto request);
+
     /// <summary>
     /// 
     /// </summary>

@@ -16,4 +16,9 @@ public class Cabinet : BaseModel
     /// Корпус
     /// </summary>
     public string Campus { get; set; }
+    
+    /// <summary>
+    /// Этаж
+    /// </summary>
+    public string Floor { get; set; }
 }

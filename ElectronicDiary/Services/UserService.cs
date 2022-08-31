@@ -41,7 +41,7 @@ public class UserService : IUserService
         if (user == null)
         {
             response.IsError = true;
-            response.Description = "Невыерный логин или пароль";
+            response.Description = "Неверный логин или пароль";
             return response;
         }
 
@@ -50,7 +50,7 @@ public class UserService : IUserService
         if (isPasswordCorrect == false)
         {
             response.IsError = true;
-            response.Description = "Невыерный логин или пароль";
+            response.Description = "Неверный логин или пароль";
             return response;
         }
 
@@ -72,6 +72,13 @@ public class UserService : IUserService
         }
 
         var mapUser = _mapper.Map<GetUserDto>(user);
+
+        var userInfo = await _userInfoRepository.GetByUserId(userId);
+
+        if (userInfo != null)
+        {
+            mapUser.UserInfo = _mapper.Map<GetUserInfoDto>(userInfo);
+        }
 
         response.Data = mapUser;
         return response;
@@ -109,7 +116,7 @@ public class UserService : IUserService
         if (checkEmail != null)
         {
             response.IsError = true;
-            response.Description = $"Пользователь с id - {request.Email} ужесуществует";
+            response.Description = $"Пользователь с почтой - {request.Email} уже существует";
             return response;
         }
 
@@ -118,14 +125,14 @@ public class UserService : IUserService
         if (checkUserName != null)
         {
             response.IsError = true;
-            response.Description = $"Пользователь с id - {request.UserName} ужесуществует";
+            response.Description = $"Пользователь с именем профиля - {request.UserName} уже существует";
             return response;
         }
 
         if (request.Password != request.ConfirmPassword)
         {
             response.IsError = true;
-            response.Description = $"Пользователь с id - {request.UserName} ужесуществует";
+            response.Description = $"Пользователь пароль и подтверждённый пароль не совпадают";
             return response;
         }
 
@@ -134,7 +141,7 @@ public class UserService : IUserService
         if (role == null)
         {
             response.IsError = true;
-            response.Description = $"Пользователь с id - {request.UserName} ужесуществует";
+            response.Description = $"Роль с id - {request.RoleId} не найдена";
             return response;
         }
 
@@ -142,15 +149,30 @@ public class UserService : IUserService
 
         var result = await _userManager.CreateAsync(user, request.Password);
 
-        if (result.Succeeded)
+        if (!result.Succeeded)
         {
-            await _userManager.AddToRoleAsync(user, role.Name);
+            response.IsError = true;
+            response.Description = $"Ошибка создания пользователя";
+            return response;
         }
+        
+        await _userManager.AddToRoleAsync(user, role.Name);
 
-        // await _userInfoRepository.CreateAsync(new UserInfo()
-        // {
-        //     UserId = user.Id
-        // });
+        if (request.UserInfo != null)
+        {
+            // var isValidInfo = await ValidateUserInfo(request.UserInfo);
+            //
+            // if (isValidInfo == false)
+            // {
+            //     response.Description = $"Обнаружены ошибки в переданных данных пользовательской информации. Проверьте данные и повторите попытку";
+            // }
+
+            var userInfo = _mapper.Map<UserInfo>(request.UserInfo);
+
+            userInfo.UserId = user.Id;
+            
+            await _userInfoRepository.CreateAsync(userInfo);
+        }
 
         var mapUser = _mapper.Map<GetUserDto>(user);
 
@@ -171,7 +193,7 @@ public class UserService : IUserService
             if (checkEmail != null)
             {
                 response.IsError = true;
-                response.Description = $"Пользователь с id - {request.Email} ужесуществует";
+                response.Description = $"Пользователь с почтой - {request.Email} уже существует";
                 return response;
             }
 
@@ -191,6 +213,22 @@ public class UserService : IUserService
             response.IsError = true;
             response.Description = result.Errors.ToString();
             return response;
+        }
+        
+        if (request.UserInfo != null)
+        {
+            // var isValidInfo = await ValidateUserInfo(request.UserInfo);
+            //
+            // if (isValidInfo == false)
+            // {
+            //     response.Description = $"Ошибки в переданных данных пользовательской информации. Проверьте данные и повторите попытку добавить данные";
+            // }
+
+            var userInfo = _mapper.Map<UserInfo>(request.UserInfo);
+
+            userInfo.UserId = user.Id;
+            
+            await _userInfoRepository.CreateAsync(userInfo);
         }
 
         var mapUser = _mapper.Map<GetUserDto>(user);
@@ -217,4 +255,35 @@ public class UserService : IUserService
         response.Data = "Удалено";
         return response;
     }
+    
+    // // todo подумать над тем что бы сделать модели create и update более абстрактными и объединить их
+    // private async Task<bool> ValidateUserInfo(CreateUserInfoDto userInfo)
+    // {
+    //     if (userInfo.ChildrenUserId != null && userInfo.IsParent && userInfo.ChildrenUserId.Any())
+    //     {
+    //         var student = await _userManager.FindByIdAsync(userInfo.ChildrenUserId);
+    //
+    //         if (student == null)
+    //         {
+    //             return false;
+    //         }
+    //     }
+    //
+    //     return true;
+    // }
+    //
+    // private async Task<bool> ValidateUserInfo(UpdateUserInfoDto userInfo)
+    // {
+    //     if (userInfo.ChildrenUserId != null && userInfo.IsParent && userInfo.ChildrenUserId.Any())
+    //     {
+    //         var student = await _userManager.FindByIdAsync(userInfo.ChildrenUserId);
+    //
+    //         if (student == null)
+    //         {
+    //             return false;
+    //         }
+    //     }
+    //
+    //     return true;
+    // }
 }

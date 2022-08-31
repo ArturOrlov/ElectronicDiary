@@ -18,4 +18,7 @@ public class UserInfo : BaseModel
     
     public string PassportNumber { get; set; }
     public string PassportSeries { get; set; }
+    
+    public bool IsParent { get; set; }
+    public List<int> ChildrenUserId { get; set; }
 }

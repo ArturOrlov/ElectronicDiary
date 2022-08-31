@@ -50,7 +50,7 @@ public class AuthenticateController : ControllerBase
         var authClaims = new List<Claim>
         {
             new(ClaimTypes.Name, user.Data.UserName),
-            // new("id", user.Data.Id.ToString()),
+            new(ClaimTypes.NameIdentifier, user.Data.Id.ToString()),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
 

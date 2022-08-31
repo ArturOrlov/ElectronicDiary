@@ -20,6 +20,7 @@ public class CabinetController : ControllerBaseExtension
         _cabinetService = cabinetService;
     }
 
+    [Authorize(Roles = Constants.Role.ForAdmins)]
     [HttpGet]
     [Route("{cabinetId:int}")]
     [SwaggerOperation(
@@ -34,6 +35,7 @@ public class CabinetController : ControllerBaseExtension
         return Response(response);
     }
 
+    [Authorize(Roles = Constants.Role.ForAdmins)]
     [HttpGet]
     [Route("")]
     [SwaggerOperation(
@@ -48,6 +50,7 @@ public class CabinetController : ControllerBaseExtension
         return Response(response);
     }
 
+    [Authorize(Roles = Constants.Role.ForAdmins)]
     [HttpPost]
     [Route("")]
     [SwaggerOperation(
@@ -62,6 +65,7 @@ public class CabinetController : ControllerBaseExtension
         return Response(response);
     }
 
+    [Authorize(Roles = Constants.Role.ForAdmins)]
     [HttpPut]
     [Route("{cabinetId:int}")]
     [SwaggerOperation(
@@ -76,6 +80,7 @@ public class CabinetController : ControllerBaseExtension
         return Response(response);
     }
 
+    [Authorize(Roles = Constants.Role.ForAdmins)]
     [HttpDelete]
     [Route("{cabinetId:int}")]
     [SwaggerOperation(

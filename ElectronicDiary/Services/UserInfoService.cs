@@ -30,7 +30,7 @@ public class UserInfoService : IUserInfoService
         if (userInfo == null)
         {
             response.IsError = true;
-            response.Description = "Невыерный логин или пароль";
+            response.Description = "Неверный логин или пароль";
             return response;
         }
 
@@ -49,7 +49,7 @@ public class UserInfoService : IUserInfoService
         if (user == null)
         {
             response.IsError = true;
-            response.Description = "Невыерный логин или пароль";
+            response.Description = "Неверный логин или пароль";
             return response;
         }
 
@@ -72,7 +72,7 @@ public class UserInfoService : IUserInfoService
         if (user == null)
         {
             response.IsError = true;
-            response.Description = "Невыерный логин или пароль";
+            response.Description = "Неверный логин или пароль";
             return response;
         }
         

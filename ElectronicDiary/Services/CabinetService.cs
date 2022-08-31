@@ -73,6 +73,13 @@ public class CabinetService : ICabinetService
             response.Description = "Корпус передан неверно";
             return response;
         }
+        
+        if (string.IsNullOrEmpty(request.Floor))
+        {
+            response.IsError = true;
+            response.Description = "Этаж передан неверно";
+            return response;
+        }
 
         var cabinet = _mapper.Map<Cabinet>(request);
         
@@ -124,6 +131,22 @@ public class CabinetService : ICabinetService
             }
             
             cabinet.Campus = request.Campus;
+        }
+        
+        if (!string.IsNullOrEmpty(request.Floor))
+        {
+            var checkNumber = _cabinetRepository.Get(s => s.Number == request.Number 
+                                                          && s.Campus == request.Campus
+                                                          && s.Floor == request.Floor).FirstOrDefault();
+            
+            if (checkNumber != null)
+            {
+                response.IsError = true;
+                response.Description = $"В корпусе - {request.Campus} на этаже - {request.Floor} уже есть кабинет - {request.Number}";
+                return response;
+            }
+            
+            cabinet.Floor = request.Floor;
         }
 
         cabinet.UpdatedAt = DateTimeOffset.Now;

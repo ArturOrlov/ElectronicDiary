@@ -1,5 +1,4 @@
 ﻿using ElectronicDiary.Dto.User;
-using ElectronicDiary.Entities;
 using ElectronicDiary.Extension;
 using ElectronicDiary.Interfaces.IServices;
 using Microsoft.AspNetCore.Authorization;
@@ -20,6 +19,7 @@ public class UserController : ControllerBaseExtension
         _userService = userService;
     }
 
+    [Authorize(Roles = Constants.Role.ForAdmins)]
     [HttpGet]
     [Route("{userId:int}")]
     [SwaggerOperation(
@@ -33,7 +33,23 @@ public class UserController : ControllerBaseExtension
 
         return Response(response);
     }
+    
+    [Authorize(Roles = Constants.Role.ForAll)]
+    [HttpGet]
+    [Route("self")]
+    [SwaggerOperation(
+        Summary = "Получить свои данные",
+        Description = "Получить свои данные",
+        OperationId = "User.Get.BySelf",
+        Tags = new[] { "User" })]
+    public async Task<IActionResult> GetBySelf()
+    {
+        var response = await _userService.GetByIdAsync(int.Parse(HttpContext.GetUserData().Id));
 
+        return Response(response);
+    }
+
+    [Authorize(Roles = Constants.Role.ForAdmins)]
     [HttpGet]
     [Route("")]
     [SwaggerOperation(
@@ -48,6 +64,7 @@ public class UserController : ControllerBaseExtension
         return Response(response);
     }
 
+    [Authorize(Roles = Constants.Role.ForAdmins)]
     [HttpPost]
     [Route("")]
     [SwaggerOperation(
@@ -62,6 +79,7 @@ public class UserController : ControllerBaseExtension
         return Response(response);
     }
 
+    [Authorize(Roles = Constants.Role.ForAdmins)]
     [HttpPut]
     [Route("{userId:int}")]
     [SwaggerOperation(
@@ -76,6 +94,7 @@ public class UserController : ControllerBaseExtension
         return Response(response);
     }
 
+    [Authorize(Roles = Constants.Role.ForAdmins)]
     [HttpDelete]
     [Route("{userId:int}")]
     [SwaggerOperation(

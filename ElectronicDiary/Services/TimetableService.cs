@@ -68,7 +68,7 @@ public class TimetableService : ITimetableService
         return response;
     }
 
-    public async Task<BaseResponse<List<GetTimetableDto>>> GetTimetableByTimeAsync(DateTimeOffset date)
+    public async Task<BaseResponse<List<GetTimetableDto>>> GetTimetableByDateAsync(DateTimeOffset date)
     {
         var response = new BaseResponse<List<GetTimetableDto>>();
 
@@ -78,22 +78,22 @@ public class TimetableService : ITimetableService
         {
             return response;
         }
-        
+
         var mapSubject = _mapper.Map<List<GetTimetableDto>>(timetables);
 
         response.Data = mapSubject;
         return response;
     }
-    
-    public async Task<BaseResponse<FileContentResult>> GetTimetableByTimeExcelAsync(DateTimeOffset date)
+
+    public async Task<BaseResponse<FileContentResult>> GetTimetableByDateExcelAsync(DateTimeOffset date)
     {
         var response = new BaseResponse<FileContentResult>();
 
-        if (date ==  default)
+        if (date == default)
         {
-            date = DateTimeOffset.Now.Date; 
+            date = DateTimeOffset.Now.Date;
         }
-        
+
         var timetables = await (from t in _context.Timetable
             join s in _context.Subject on t.SubjectId equals s.Id
             join sc in _context.SchoolClass on t.SchoolClassId equals sc.Id
@@ -102,6 +102,8 @@ public class TimetableService : ITimetableService
             {
                 Id = t.Id,
                 StartedAt = t.StartedAt,
+                LessonDuration = t.LessonDuration,
+                BreakDuration = t.BreakDuration,
                 SubjectId = t.SubjectId,
                 SubjectName = s.Name,
                 SchoolClassId = t.SchoolClassId,
@@ -114,13 +116,16 @@ public class TimetableService : ITimetableService
         response.Data = ReturnResult(result, "Расписание");
         return response;
     }
-    
+
     public async Task<BaseResponse<GetTimetableDto>> CreateTimetableAsync(CreateTimetableDto request)
     {
         var response = new BaseResponse<GetTimetableDto>();
 
         var checkTimetable = _timetableRepository.Get(t =>
-                t.SubjectId == request.SubjectId && t.SchoolClassId == request.SchoolClassId &&
+                t.SubjectId == request.SubjectId &&
+                t.LessonDuration == request.LessonDuration &&
+                t.BreakDuration == request.BreakDuration &&
+                t.SchoolClassId == request.SchoolClassId &&
                 t.StartedAt == request.StartedAt.AddSeconds(-request.StartedAt.Second))
             .FirstOrDefault();
 
@@ -166,8 +171,7 @@ public class TimetableService : ITimetableService
         return response;
     }
 
-    public async Task<BaseResponse<GetTimetableDto>> UpDateTimeOffsettableByIdAsync(int timetableId,
-        UpDateTimeOffsettableDto request)
+    public async Task<BaseResponse<GetTimetableDto>> UpdateTimetableByIdAsync(int timetableId, UpdateTimetableDto request)
     {
         var response = new BaseResponse<GetTimetableDto>();
 
@@ -247,7 +251,7 @@ public class TimetableService : ITimetableService
         response.Data = "Удалено";
         return response;
     }
-    
+
     private async Task<MemoryStream> TimetableInExcel(List<GetTimetableExcelDto> timetables)
     {
         var workbook = new Workbook();
@@ -258,26 +262,26 @@ public class TimetableService : ITimetableService
         worksheet.Cells[0, 0] = new Cell("Класс");
         worksheet.Cells[1, 0] = new Cell("Время");
         worksheet.Cells[2, 0] = new Cell("Предмет");
-        
+
         for (var i = 0; i < timetables.Count; i++)
         {
             var timetable = timetables[i];
 
             var number = DateTime.Now.Year - timetable.ClassCreateTime.Year + 1;
-            
+
             worksheet.Cells[i + 1, 0] = new Cell($"{number}{timetable.SchoolClassName}");
             worksheet.Cells[i + 1, 1] = new Cell($"{timetable.StartedAt}");
             worksheet.Cells[i + 1, 2] = new Cell($"{timetable.SubjectName}");
         }
-        
+
         workbook.Worksheets.Add(worksheet);
-        
+
         using var stream = new MemoryStream();
         workbook.SaveToStream(stream);
         stream.Flush();
         return stream;
     }
-    
+
     private FileContentResult ReturnResult(MemoryStream stream, string fileName)
     {
         return new FileContentResult(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")

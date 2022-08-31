@@ -2,35 +2,44 @@
 using ElectronicDiary.Dto.PerformanceRating;
 using ElectronicDiary.Dto.Report;
 using ElectronicDiary.Dto.Subject;
+using ElectronicDiary.Dto.User;
 using ElectronicDiary.Entities;
 using ElectronicDiary.Entities.Base;
 using ElectronicDiary.Entities.DbModels;
 using ElectronicDiary.Interfaces.IRepositories;
 using ElectronicDiary.Interfaces.IServices;
+using ExcelLibrary.SpreadSheet;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ElectronicDiary.Services;
 
 public class PerformanceRatingService : IPerformanceRatingService
 {
     private readonly IPerformanceRatingRepository _performanceRatingRepository;
+    private readonly ISchoolClassRepository _schoolClassRepository;
     private readonly IUserClassRepository _userClassRepository;
+    private readonly IUserInfoRepository _userInfoRepository;
+    private readonly IUserRepository _userRepository;
     private readonly ISubjectRepository _subjectRepository;
-    private readonly IUserService _userService;
     private readonly IMapper _mapper;
 
     public PerformanceRatingService(IPerformanceRatingRepository performanceRatingRepository, 
+        ISchoolClassRepository schoolClassRepository,
         IUserClassRepository userClassRepository,
-        ISubjectRepository subjectRepository, 
-        IUserService userService,
+        IUserInfoRepository userInfoRepository,
+        IUserRepository userRepository,
+        ISubjectRepository subjectRepository,
         IMapper mapper)
     {
         _performanceRatingRepository = performanceRatingRepository;
+        _schoolClassRepository = schoolClassRepository;
         _userClassRepository = userClassRepository;
+        _userInfoRepository = userInfoRepository;
+        _userRepository = userRepository;
         _subjectRepository = subjectRepository;
-        _userService = userService;
         _mapper = mapper;
     }
-
+    
     public async Task<BaseResponse<GetPerformanceRatingDto>> GetPerformanceRatingByIdAsync(int performanceRatingId)
     {
         var response = new BaseResponse<GetPerformanceRatingDto>();
@@ -50,7 +59,8 @@ public class PerformanceRatingService : IPerformanceRatingService
         return response;
     }
 
-    public async Task<BaseResponse<List<GetPerformanceRatingDto>>> GetPerformanceRatingByPaginationAsync(BasePagination request)
+    public async Task<BaseResponse<List<GetPerformanceRatingDto>>> GetPerformanceRatingByPaginationAsync(
+        BasePagination request)
     {
         var response = new BaseResponse<List<GetPerformanceRatingDto>>();
 
@@ -67,23 +77,71 @@ public class PerformanceRatingService : IPerformanceRatingService
         return response;
     }
 
-    public async Task<BaseResponse<List<ResponsePerformanceRatingReportDto>>> GetPerformanceRatingReportAsync(GetPerformanceRatingReportDto request)
+    public async Task<BaseResponse<List<GetPerformanceRatingDto>>> GetPerformanceRatingBySelfAsync(UserDataDto userData)
+    {
+        var response = new BaseResponse<List<GetPerformanceRatingDto>>();
+
+        if (Constants.Role.Parent != userData.Role || Constants.Role.Student != userData.Role)
+        {
+            response.IsError = true;
+            response.Description = $"Пользователь с ролью - {userData.Role} не может получить свои оценки";
+            return response;
+        }
+
+        List<GetPerformanceRatingDto> mapPerformanceRating;
+
+        if (Constants.Role.Parent == userData.Role)
+        {
+            var userInfo = await _userInfoRepository.GetByUserId(int.Parse(userData.Id));
+            var parentChild = _userRepository.Get(u => userInfo.ChildrenUserId.Contains(u.Id));
+
+            var performanceRatings = _performanceRatingRepository
+                .Get(pr => parentChild.Select(u => u.Id).Contains(pr.StudentId))
+                .ToList();
+
+            if (!performanceRatings.Any())
+            {
+                return response;
+            }
+
+            performanceRatings.Sort((x, y) => x.Id.CompareTo(y.Id));
+
+            mapPerformanceRating = _mapper.Map<List<GetPerformanceRatingDto>>(performanceRatings);
+        }
+        else
+        {
+            var ratings = _performanceRatingRepository.Get(pr => pr.StudentId == int.Parse(userData.Id));
+
+            if (ratings == null || !ratings.Any())
+            {
+                return response;
+            }
+
+            mapPerformanceRating = _mapper.Map<List<GetPerformanceRatingDto>>(ratings);
+        }
+
+        response.Data = mapPerformanceRating;
+        return response;
+    }
+
+    public async Task<BaseResponse<List<ResponsePerformanceRatingReportDto>>> GetPerformanceRatingReportAsync(
+        GetPerformanceRatingReportDto request)
     {
         var response = new BaseResponse<List<ResponsePerformanceRatingReportDto>>();
 
-        var user = await _userService.GetByIdAsync(request.UserId);
+        var user = await _userRepository.GetByIdAsync(request.UserId);
 
-        if (user.Data == null)
+        if (user == null)
         {
             response.IsError = true;
             response.Description = $"Ученик с id - {request.UserId} не найден";
             return response;
         }
-        
+
         // todo Проверка на роль
-        
+
         // -------------------
-        
+
         //
         var subjects = await _subjectRepository.GetRangeAsync();
 
@@ -95,7 +153,7 @@ public class PerformanceRatingService : IPerformanceRatingService
         }
 
         var performanceRatings = _performanceRatingRepository.Get(pr => pr.StudentId == request.UserId
-                                                        && pr.CreatedAt.Year == request.Year).ToList();
+                                                                        && pr.CreatedAt.Year == request.Year).ToList();
 
         if (!performanceRatings.Any())
         {
@@ -105,38 +163,104 @@ public class PerformanceRatingService : IPerformanceRatingService
         }
 
         var report = new List<ResponsePerformanceRatingReportDto>();
-        
+
         foreach (var performanceRating in performanceRatings)
         {
             var subject = subjects.FirstOrDefault(s => s.Id == performanceRating.SubjectId);
-            
+
             report.Add(new ResponsePerformanceRatingReportDto()
             {
                 Rating = _mapper.Map<GetPerformanceRatingBaseDto>(performanceRating),
                 Subject = _mapper.Map<GetSubjectDto>(subject),
             });
         }
-        
+
         response.Data = report;
         return response;
     }
 
-    public async Task<BaseResponse<GetPerformanceRatingDto>> CreatePerformanceRatingAsync(CreatePerformanceRatingDto request)
+    public async Task<BaseResponse<FileContentResult>> GetReportPerformanceRatingBySelfAsync(UserDataDto userData)
+    {
+        var response = new BaseResponse<FileContentResult>();
+
+        var performanceRating = await GetPerformanceRatingBySelfAsync(userData);
+
+        if (performanceRating.IsError)
+        {
+            response.IsError = true;
+            response.Description = performanceRating.Description;
+            return response;
+        }
+        
+        var result = await PerformanceRatingInExcel(performanceRating.Data);
+
+        response.Data = ReturnResult(result, "Расписание");
+        return response;
+    }
+    
+    private async Task<MemoryStream> PerformanceRatingInExcel(List<GetPerformanceRatingDto> performanceRatings)
+    {
+        var workbook = new Workbook();
+        var worksheet = new Worksheet("First Sheet")
+        {
+            Cells =
+            {
+                [0, 0] = new Cell("Класс"),
+                [1, 0] = new Cell("Предмет"),
+                [2, 0] = new Cell("Оценка")
+            }
+        };
+
+        var studentIds = _userRepository.Get(u => performanceRatings.Select(pr => pr.StudentId).Contains(u.Id));
+        var userClasses = _userClassRepository.Get(uc => studentIds.Select(u => u.Id).Contains(uc.UserId));
+        var subjectIds = _subjectRepository.Get(s => performanceRatings.Select(pr => pr.SubjectId).Contains(s.Id));
+
+        for (var i = 0; i < performanceRatings.Count; i++)
+        {
+            var performanceRating = performanceRatings[i];
+            
+            var userClass = await _userClassRepository.GetByUserId(userClasses.FirstOrDefault(uc => uc.UserId == performanceRating.StudentId)!.UserId);
+            var schoolClass = _schoolClassRepository.Get(sc => sc.Id == userClass.SchoolClassId).FirstOrDefault();
+            var number = DateTime.Now.Year - schoolClass!.ClassCreateTime.Year + 1;
+
+            worksheet.Cells[i + 1, 0] = new Cell($"{number}{schoolClass.Symbol}");
+            worksheet.Cells[i + 1, 1] = new Cell($"{subjectIds.Select(s => s.Id == performanceRating.SubjectId)}");
+            worksheet.Cells[i + 1, 2] = new Cell($"{performanceRating.Valuation}");  
+        }
+
+        workbook.Worksheets.Add(worksheet);
+
+        using var stream = new MemoryStream();
+        workbook.SaveToStream(stream);
+        stream.Flush();
+        return stream;
+    }
+
+    private FileContentResult ReturnResult(MemoryStream stream, string fileName)
+    {
+        return new FileContentResult(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+        {
+            FileDownloadName = $"{fileName}_{DateTime.UtcNow.ToShortDateString()}.xlsx"
+        };
+    }
+
+    public async Task<BaseResponse<GetPerformanceRatingDto>> CreatePerformanceRatingAsync(
+        CreatePerformanceRatingDto request)
     {
         var response = new BaseResponse<GetPerformanceRatingDto>();
 
-        var teacher = await _userService.GetByIdAsync(request.TeacherId);
+        var teacher = await _userRepository.GetByIdAsync(request.TeacherId);
 
-        if (teacher.Data == null)
+        if (teacher == null)
         {
             response.IsError = true;
             response.Description = $"Учитель с id - {request.TeacherId} не найден";
             return response;
         }
 
-        var student = await _userService.GetByIdAsync(request.StudentId);
+        var student = await _userRepository.GetByIdAsync(request.StudentId);
 
-        if (student.Data == null)
+        if (student == null)
         {
             response.IsError = true;
             response.Description = $"Ученик с id - {request.StudentId} не найден";
@@ -160,16 +284,16 @@ public class PerformanceRatingService : IPerformanceRatingService
         }
 
         var performanceRating = _mapper.Map<PerformanceRating>(request);
-        
+
         var userClass = _userClassRepository.Get(uc => uc.UserId == performanceRating.StudentId).FirstOrDefault();
-        
+
         if (userClass == null)
         {
             response.IsError = true;
             response.Description = $"Пользователь с id - {request.StudentId} не находится в школьном классе";
             return response;
         }
-        
+
         performanceRating.SchoolClassId = userClass.SchoolClassId;
 
         await _performanceRatingRepository.CreateAsync(performanceRating);
@@ -180,7 +304,8 @@ public class PerformanceRatingService : IPerformanceRatingService
         return response;
     }
 
-    public async Task<BaseResponse<GetPerformanceRatingDto>> UpdatePerformanceRatingByIdAsync(int performanceRatingId, UpdatePerformanceRatingDto request)
+    public async Task<BaseResponse<GetPerformanceRatingDto>> UpdatePerformanceRatingByIdAsync(int performanceRatingId,
+        UpdatePerformanceRatingDto request)
     {
         var response = new BaseResponse<GetPerformanceRatingDto>();
 
@@ -193,11 +318,11 @@ public class PerformanceRatingService : IPerformanceRatingService
             return response;
         }
 
-        if (request.TeacherId.HasValue  && request.TeacherId != 0)
+        if (request.TeacherId.HasValue && request.TeacherId != 0)
         {
-            var teacher = await _userService.GetByIdAsync((int)request.TeacherId);
+            var teacher = await _userRepository.GetByIdAsync((int)request.TeacherId);
 
-            if (teacher.Data == null)
+            if (teacher == null)
             {
                 response.IsError = true;
                 response.Description = $"Учитель с id - {request.TeacherId} не найден";
@@ -209,9 +334,9 @@ public class PerformanceRatingService : IPerformanceRatingService
 
         if (request.StudentId.HasValue && request.StudentId != 0)
         {
-            var student = await _userService.GetByIdAsync((int)request.StudentId);
+            var student = await _userRepository.GetByIdAsync((int)request.StudentId);
 
-            if (student.Data == null)
+            if (student == null)
             {
                 response.IsError = true;
                 response.Description = $"Ученик с id - {request.StudentId} не найден";
@@ -219,16 +344,16 @@ public class PerformanceRatingService : IPerformanceRatingService
             }
 
             performanceRating.StudentId = (int)request.StudentId;
-            
-            var userClass = _userClassRepository.Get(uc => uc.UserId == student.Data.Id).FirstOrDefault();
-        
+
+            var userClass = _userClassRepository.Get(uc => uc.UserId == student.Id).FirstOrDefault();
+
             if (userClass == null)
             {
                 response.IsError = true;
                 response.Description = $"Пользователь с id - {request.StudentId} не находится в школьном классе";
                 return response;
             }
-        
+
             performanceRating.SchoolClassId = userClass.SchoolClassId;
         }
 

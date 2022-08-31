@@ -1,5 +1,4 @@
 ﻿using ElectronicDiary.Dto.User;
-using ElectronicDiary.Entities;
 using ElectronicDiary.Entities.Base;
 using ElectronicDiary.Entities.DbModels;
 

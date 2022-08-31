@@ -20,6 +20,7 @@ public class SchoolClassController : ControllerBaseExtension
         _schoolClassService = schoolClassService;
     }
 
+    [Authorize(Roles = Constants.Role.ForTeacher)]
     [HttpGet]
     [Route("{schoolClassId:int}")]
     [SwaggerOperation(
@@ -34,6 +35,7 @@ public class SchoolClassController : ControllerBaseExtension
         return Response(response);
     }
 
+    [Authorize(Roles = Constants.Role.ForTeacher)]
     [HttpGet]
     [Route("")]
     [SwaggerOperation(
@@ -48,6 +50,7 @@ public class SchoolClassController : ControllerBaseExtension
         return Response(response);
     }
 
+    [Authorize(Roles = Constants.Role.ForAdmins)]
     [HttpPost]
     [Route("")]
     [SwaggerOperation(
@@ -62,6 +65,7 @@ public class SchoolClassController : ControllerBaseExtension
         return Response(response);
     }
 
+    [Authorize(Roles = Constants.Role.ForAdmins)]
     [HttpPut]
     [Route("{schoolClassId:int}")]
     [SwaggerOperation(
@@ -76,6 +80,7 @@ public class SchoolClassController : ControllerBaseExtension
         return Response(response);
     }
 
+    [Authorize(Roles = Constants.Role.ForAdmins)]
     [HttpDelete]
     [Route("{schoolClassId:int}")]
     [SwaggerOperation(

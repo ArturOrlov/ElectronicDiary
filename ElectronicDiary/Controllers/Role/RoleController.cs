@@ -20,6 +20,7 @@ public class RoleController : ControllerBaseExtension
         _roleService = roleService;
     }
 
+    [Authorize(Roles = Constants.Role.Admin)]
     [HttpGet]
     [Route("{roleId:int}")]
     [SwaggerOperation(
@@ -34,6 +35,7 @@ public class RoleController : ControllerBaseExtension
         return Response(response);
     }
 
+    [Authorize(Roles = Constants.Role.Admin)]
     [HttpGet]
     [Route("")]
     [SwaggerOperation(
@@ -48,6 +50,7 @@ public class RoleController : ControllerBaseExtension
         return Response(response);
     }
 
+    [Authorize(Roles = Constants.Role.Admin)]
     [HttpPost]
     [Route("")]
     [SwaggerOperation(
@@ -62,6 +65,7 @@ public class RoleController : ControllerBaseExtension
         return Response(response);
     }
 
+    [Authorize(Roles = Constants.Role.Admin)]
     [HttpPut]
     [Route("{roleId:int}")]
     [SwaggerOperation(
@@ -76,6 +80,7 @@ public class RoleController : ControllerBaseExtension
         return Response(response);
     }
 
+    [Authorize(Roles = Constants.Role.Admin)]
     [HttpDelete]
     [Route("{roleId:int}")]
     [SwaggerOperation(

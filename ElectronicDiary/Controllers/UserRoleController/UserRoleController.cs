@@ -20,6 +20,7 @@ public class UserRoleController : ControllerBaseExtension
         _userRoleService = userRoleService;
     }
 
+    [Authorize(Roles = Constants.Role.Admin)]
     [HttpGet]
     [Route("{userRoleId:int}")]
     [SwaggerOperation(
@@ -34,6 +35,7 @@ public class UserRoleController : ControllerBaseExtension
         return Response(response);
     }
 
+    [Authorize(Roles = Constants.Role.Admin)]
     [HttpGet]
     [Route("")]
     [SwaggerOperation(
@@ -48,6 +50,7 @@ public class UserRoleController : ControllerBaseExtension
         return Response(response);
     }
 
+    [Authorize(Roles = Constants.Role.Admin)]
     [HttpPost]
     [Route("")]
     [SwaggerOperation(
@@ -62,6 +65,7 @@ public class UserRoleController : ControllerBaseExtension
         return Response(response);
     }
 
+    [Authorize(Roles = Constants.Role.Admin)]
     [HttpPut]
     [Route("{userRoleId:int}")]
     [SwaggerOperation(
@@ -76,6 +80,7 @@ public class UserRoleController : ControllerBaseExtension
         return Response(response);
     }
 
+    [Authorize(Roles = Constants.Role.Admin)]
     [HttpDelete]
     [Route("{userRoleId:int}")]
     [SwaggerOperation(

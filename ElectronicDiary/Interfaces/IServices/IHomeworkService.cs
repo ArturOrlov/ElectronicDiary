@@ -1,6 +1,8 @@
 ﻿using ElectronicDiary.Dto.Homework;
+using ElectronicDiary.Dto.User;
 using ElectronicDiary.Entities;
 using ElectronicDiary.Entities.Base;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ElectronicDiary.Interfaces.IServices;
 
@@ -19,6 +21,20 @@ public interface IHomeworkService
     /// <param name="request"></param>
     /// <returns></returns>
     Task<BaseResponse<List<GetHomeworkDto>>> GetHomeworkByPaginationAsync(BasePagination request);
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="userData"></param>
+    /// <returns></returns>
+    Task<BaseResponse<List<GetHomeworkDto>>> GetHomeworkBySelfAsync(UserDataDto userData);   
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="userData"></param>
+    /// <returns></returns>
+    Task<BaseResponse<FileContentResult>> GetReportHomeworkBySelfAsync(UserDataDto userData);
     
     /// <summary>
     /// 

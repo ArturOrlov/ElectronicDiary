@@ -20,6 +20,7 @@ public class HomeworkController : ControllerBaseExtension
         _homeworkService = homeworkService;
     }
     
+    [Authorize(Roles = Constants.Role.ForTeacher)]
     [HttpGet]
     [Route("{homeworkId:int}")]
     [SwaggerOperation(
@@ -34,6 +35,7 @@ public class HomeworkController : ControllerBaseExtension
         return Response(response);
     }
 
+    [Authorize(Roles = Constants.Role.ForTeacher)]
     [HttpGet]
     [Route("")]
     [SwaggerOperation(
@@ -47,7 +49,23 @@ public class HomeworkController : ControllerBaseExtension
 
         return Response(response);
     }
+    
+    [Authorize(Roles = Constants.Role.ForAll)]
+    [HttpGet]
+    [Route("self")]
+    [SwaggerOperation(
+        Summary = "Получить свои оценки",
+        Description = "Получить свои оценки",
+        OperationId = "PerformanceRating.Get.List.BySelf",
+        Tags = new[] { "PerformanceRating" })]
+    public async Task<IActionResult> GetBySelf()
+    {
+        var response = await _homeworkService.GetHomeworkBySelfAsync(HttpContext.GetUserData());
 
+        return Response(response);
+    }
+
+    [Authorize(Roles = Constants.Role.ForTeacher)]
     [HttpPost]
     [Route("")]
     [SwaggerOperation(
@@ -62,6 +80,7 @@ public class HomeworkController : ControllerBaseExtension
         return Response(response);
     }
 
+    [Authorize(Roles = Constants.Role.ForTeacher)]
     [HttpPut]
     [Route("{homeworkId:int}")]
     [SwaggerOperation(
@@ -76,6 +95,7 @@ public class HomeworkController : ControllerBaseExtension
         return Response(response);
     }
 
+    [Authorize(Roles = Constants.Role.ForTeacher)]
     [HttpDelete]
     [Route("{homeworkId:int}")]
     [SwaggerOperation(

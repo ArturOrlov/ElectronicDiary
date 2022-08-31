@@ -7,7 +7,7 @@ namespace ElectronicDiary.Repositories;
 
 public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEntity : class
 {
-    private readonly ElectronicDiaryDbContext _context;
+    protected readonly ElectronicDiaryDbContext _context;
     private readonly DbSet<TEntity> _dbSet;
 
     public GenericRepository(ElectronicDiaryDbContext context)

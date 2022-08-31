@@ -32,13 +32,13 @@ public class Bootstrap
             return;
         }
 
-        var roles = new List<Role>()
+        var roles = new List<Entities.DbModels.Role>()
         {
-            RoleSeedHelper(RoleConstant.Admin),
-            RoleSeedHelper(RoleConstant.HeadTeacher),
-            RoleSeedHelper(RoleConstant.Teacher),
-            RoleSeedHelper(RoleConstant.Student),
-            RoleSeedHelper(RoleConstant.Parent)
+            RoleSeedHelper(Constants.Role.Admin),
+            RoleSeedHelper(Constants.Role.HeadTeacher),
+            RoleSeedHelper(Constants.Role.Teacher),
+            RoleSeedHelper(Constants.Role.Student),
+            RoleSeedHelper(Constants.Role.Parent)
         };
 
         await _context.AddRangeAsync(roles);
@@ -69,7 +69,7 @@ public class Bootstrap
 
         if (result.Succeeded)
         {
-            await _userManager.AddToRoleAsync(user, RoleConstant.Admin);
+            await _userManager.AddToRoleAsync(user, Constants.Role.Admin);
         }
     }
 
@@ -132,9 +132,9 @@ public class Bootstrap
 
     // ============================================================================================================== //
 
-    private Role RoleSeedHelper(string role)
+    private Entities.DbModels.Role RoleSeedHelper(string role)
     {
-        return new Role()
+        return new Entities.DbModels.Role()
         {
             Name = role,
             NormalizedName = role.ToUpper(),

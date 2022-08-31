@@ -11,4 +11,9 @@ public class GetCabinetDto
     /// Корпус
     /// </summary>
     public string Campus { get; set; }
+    
+    /// <summary>
+    /// Этаж
+    /// </summary>
+    public string Floor { get; set; }
 }

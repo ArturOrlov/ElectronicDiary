@@ -20,6 +20,7 @@ public class SubjectController : ControllerBaseExtension
         _subjectService = subjectService;
     }
 
+    [Authorize(Roles = Constants.Role.ForAll)]
     [HttpGet]
     [Route("{subjectId:int}")]
     [SwaggerOperation(
@@ -34,6 +35,7 @@ public class SubjectController : ControllerBaseExtension
         return Response(response);
     }
 
+    [Authorize(Roles = Constants.Role.ForAll)]
     [HttpGet]
     [Route("")]
     [SwaggerOperation(
@@ -48,6 +50,7 @@ public class SubjectController : ControllerBaseExtension
         return Response(response);
     }
 
+    [Authorize(Roles = Constants.Role.ForAdmins)]
     [HttpPost]
     [Route("")]
     [SwaggerOperation(
@@ -62,6 +65,7 @@ public class SubjectController : ControllerBaseExtension
         return Response(response);
     }
 
+    [Authorize(Roles = Constants.Role.ForAdmins)]
     [HttpPut]
     [Route("{subjectId:int}")]
     [SwaggerOperation(
@@ -76,6 +80,7 @@ public class SubjectController : ControllerBaseExtension
         return Response(response);
     }
 
+    [Authorize(Roles = Constants.Role.ForAdmins)]
     [HttpDelete]
     [Route("{subjectId:int}")]
     [SwaggerOperation(

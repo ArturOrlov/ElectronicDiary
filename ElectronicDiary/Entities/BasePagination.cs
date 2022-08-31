@@ -2,6 +2,6 @@
 
 public class BasePagination
 {
-    public int Skip { get; set; }
-    public int Take { get; set; }
+    public int Skip { get; set; } = 0;
+    public int Take { get; set; } = 15;
 }

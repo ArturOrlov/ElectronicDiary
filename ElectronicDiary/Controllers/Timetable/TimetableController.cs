@@ -20,6 +20,7 @@ public class TimetableController : ControllerBaseExtension
         _timetableService = timetableService;
     }
 
+    [Authorize(Roles = Constants.Role.ForAll)]
     [HttpGet]
     [Route("{timetableId:int}")]
     [SwaggerOperation(
@@ -34,6 +35,7 @@ public class TimetableController : ControllerBaseExtension
         return Response(response);
     }
 
+    [Authorize(Roles = Constants.Role.ForAll)]
     [HttpGet]
     [Route("")]
     [SwaggerOperation(
@@ -47,7 +49,8 @@ public class TimetableController : ControllerBaseExtension
 
         return Response(response);
     }
-    
+
+    [Authorize(Roles = Constants.Role.ForAll)]
     [HttpGet]
     [Route("date")]
     [SwaggerOperation(
@@ -57,11 +60,12 @@ public class TimetableController : ControllerBaseExtension
         Tags = new[] { "Timetable" })]
     public async Task<IActionResult> Get([FromQuery] DateTimeOffset date)
     {
-        var response = await _timetableService.GetTimetableByTimeAsync(date);
+        var response = await _timetableService.GetTimetableByDateAsync(date);
 
         return Response(response);
     }
-    
+
+    [Authorize(Roles = Constants.Role.ForAll)]
     [HttpPost]
     [Route("date/excel/download")]
     [SwaggerOperation(
@@ -71,11 +75,12 @@ public class TimetableController : ControllerBaseExtension
         Tags = new[] { "Timetable" })]
     public async Task<IActionResult> GetExcel([FromQuery] DateTimeOffset date)
     {
-        var response = await _timetableService.GetTimetableByTimeExcelAsync(date);
+        var response = await _timetableService.GetTimetableByDateExcelAsync(date);
 
         return response.Data;
     }
 
+    [Authorize(Roles = Constants.Role.ForAdmins)]
     [HttpPost]
     [Route("")]
     [SwaggerOperation(
@@ -90,6 +95,7 @@ public class TimetableController : ControllerBaseExtension
         return Response(response);
     }
 
+    [Authorize(Roles = Constants.Role.ForAdmins)]
     [HttpPut]
     [Route("{timetableId:int}")]
     [SwaggerOperation(
@@ -97,13 +103,14 @@ public class TimetableController : ControllerBaseExtension
         Description = "Обновить расписание по его id",
         OperationId = "Timetable.Update.ById",
         Tags = new[] { "Timetable" })]
-    public async Task<IActionResult> Update([FromRoute] int timetableId, [FromBody] UpDateTimeOffsettableDto request)
+    public async Task<IActionResult> Update([FromRoute] int timetableId, [FromBody] UpdateTimetableDto request)
     {
-        var response = await _timetableService.UpDateTimeOffsettableByIdAsync(timetableId, request);
+        var response = await _timetableService.UpdateTimetableByIdAsync(timetableId, request);
 
         return Response(response);
     }
 
+    [Authorize(Roles = Constants.Role.ForAdmins)]
     [HttpDelete]
     [Route("{timetableId:int}")]
     [SwaggerOperation(

@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
-namespace ElectronicDiary.Controllers._Dev;
+namespace ElectronicDiary.Controllers.Report;
 
 [Authorize]
 [ApiController]
@@ -14,17 +14,21 @@ public class ReportController : ControllerBaseExtension
 {
     private readonly IPerformanceRatingService _performanceRatingService;
     private readonly ISchoolClassService _schoolClassService;
+    private readonly IHomeworkService _homeworkService;
     private readonly ISubjectService _subjectService;
 
-    public ReportController(IPerformanceRatingService performanceRatingService, 
+    public ReportController(IPerformanceRatingService performanceRatingService,
         ISchoolClassService schoolClassService,
+        IHomeworkService homeworkService,
         ISubjectService subjectService)
     {
         _performanceRatingService = performanceRatingService;
         _schoolClassService = schoolClassService;
+        _homeworkService = homeworkService;
         _subjectService = subjectService;
     }
 
+    [Authorize(Roles = Constants.Role.ForTeacher)]
     [HttpGet]
     [Route("student")]
     [SwaggerOperation(
@@ -39,6 +43,7 @@ public class ReportController : ControllerBaseExtension
         return Response(response);
     }
 
+    [Authorize(Roles = Constants.Role.ForTeacher)]
     [HttpGet]
     [Route("school-class")]
     [SwaggerOperation(
@@ -53,6 +58,7 @@ public class ReportController : ControllerBaseExtension
         return Response(response);
     }
 
+    [Authorize(Roles = Constants.Role.ForTeacher)]
     [HttpGet]
     [Route("subject")]
     [SwaggerOperation(
@@ -63,6 +69,36 @@ public class ReportController : ControllerBaseExtension
     public async Task<IActionResult> GetReportBySubjectId([FromQuery] GetSubjectReportDto request)
     {
         var response = await _subjectService.GetSubjectReportAsync(request);
+
+        return Response(response);
+    }
+
+    [Authorize(Roles = Constants.Role.ForAll)]
+    [HttpGet]
+    [Route("self/performance-rating/excel/download")]
+    [SwaggerOperation(
+        Summary = "Получить свои оценки",
+        Description = "Получить свои оценки",
+        OperationId = "Report.Get.BySelf.PerformanceRating",
+        Tags = new[] { "Report" })]
+    public async Task<IActionResult> GetReportPerformanceRatingBySelf()
+    {
+        var response = await _performanceRatingService.GetReportPerformanceRatingBySelfAsync(HttpContext.GetUserData());
+
+        return Response(response);
+    }
+
+    [Authorize(Roles = Constants.Role.ForAll)]
+    [HttpGet]
+    [Route("self/homework/excel/download")]
+    [SwaggerOperation(
+        Summary = "Получить своё домашнее задание",
+        Description = "Получить своё домашнее задание",
+        OperationId = "Report.Get.BySelf.Homework",
+        Tags = new[] { "Report" })]
+    public async Task<IActionResult> GetReportHomeworkBySelf()
+    {
+        var response = await _homeworkService.GetReportHomeworkBySelfAsync(HttpContext.GetUserData());
 
         return Response(response);
     }
